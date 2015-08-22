@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3" xmlns="http://www.w3.org/1999/xhtml">
+
+    <head th:include="thy/templates/layout :: headerFragment"></head>
+    <body>
+        <div th:include="thy/templates/layout :: menuFragment"></div>
+
+        <div class="container" >	
+            <div class="alert alert-danger fade in">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <strong>Error!</strong> Indicates a successful or positive action.
+            </div>
+
+            <ul class="nav nav-tabs">
+                <li class="dropdown active">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Персонал
+                        <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li class="active"><a href="#">Список</a></li>
+                        <li><a href="#">Добавление\правка</a></li>
+                        <li><a href="#">Статистика</a></li> 
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Гости
+                        <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">За всё время</a></li>
+                        <li><a href="#">За сегодня</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Посещение
+                        <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">За сегодня</a></li>
+                        <li><a href="#">За месяц</a></li>
+                        <li><a href="#">За всё время</a></li> 
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Пользователи
+                        <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Список</a></li>
+                        <li><a href="#">Добавление</a></li>
+                        <li><a href="#">Статистика</a></li> 
+                    </ul>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <div id="home" class="tab-pane fade in active">
+
+
+                </div>
+                <div id="menu1" class="tab-pane fade">
+                    fsdfsdfsd
+                </div>
+                <div id="menu2" class="tab-pane fade">
+                    <h3>Menu 2</h3>
+                    <p>Some content in menu 2.</p>
+                </div>
+            </div>
+        </div>
+
+        <div th:include="thy/templates/layout :: footerFragment"></div>         
+    </body>
+
+</html>

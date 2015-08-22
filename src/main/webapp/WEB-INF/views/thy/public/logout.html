@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:include="thy/templates/layout :: headerFragment">
+</head>
+
+<body>
+
+<div th:include="thy/templates/layout :: menuFragment">
+</div>
+<div class="container">
+
+</div>
+    See you soon! Вы будете перенаправлены на главную страницу через <b id="time">5</b>секунд
+    или же нажмите <a th:href="@{/}">перейти!</a>
+<div th:include="thy/templates/layout :: footerFragment">
+
+</div>
+
+<script>  
+    var spendTime = 5;
+       setInterval(function(){
+           var time = document.getElementById("time");
+            spendTime--;
+            time.innerHTML = spendTime;           
+       },1000);
+       setTimeout(function(){
+           window.location.href = './';       
+    },5000); 
+</script>
+</body>
+
+</html>

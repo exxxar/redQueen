@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:tiles="http://www.thymeleaf.org">
+    <title>W3.CSS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" th:href="@{/resources/css/w3.css }" href="resources/css/w3.css" type="text/css"/>    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
+    <body>
+
+        <header class="w3-container blue">
+            <h1>Material</h1>
+        </header>
+
+        <section class="w3-container">
+            <h2>Oops! Something went wrong...</h2>
+            <h2>404 -The page cannot be found</h2>
+            <p>Sorry, we cannot find the page you are looking for.</p>
+            <p>It might have been removed, had its name changed, or is temporarily unavailable. </p>
+            <p>Please check that the Web site address is spelled correctly.</p>
+            <p>Or go to our <a class="w3-text-theme" th:href="@{/}">HOME PAGE</a>, and use the menus to navigate to a specific section.</p> 
+        </section>
+
+    </body>
+</html> 

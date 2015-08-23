@@ -27,6 +27,7 @@ import net.tanesha.recaptcha.ReCaptchaResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.security.core.Authentication;
@@ -54,6 +55,9 @@ public class UserController {
 
     static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
+    @Autowired
+    Environment env;
+    
     @Autowired
     UserServiceImp userService;
 
@@ -84,14 +88,15 @@ public class UserController {
 
     @RequestMapping("/public/signup")
     public String create(Model model) {
-        logger.debug("Enter: create");
+       
         if (!model.containsAttribute("user")) {
             model.addAttribute("user", new UserForm());
         }
-        logger.debug("Check: reCaptcha {}", reCaptcha != null);
+       
         if (reCaptcha != null) {
             model.addAttribute("recaptcha", reCaptcha.createRecaptchaHtml(null, null));
         }
+        
         return "thy/public/signup";
     }
 
@@ -103,7 +108,7 @@ public class UserController {
             @RequestParam(value = "recaptcha_response_field", required = false) String responseField,
             ServletRequest servletRequest) {
 
-        logger.debug("Enter: createUser");
+     
         if (reCaptcha != null) {
             String remoteAdress = servletRequest.getRemoteAddr();
             ReCaptchaResponse reCaptchaResponse = reCaptcha.checkAnswer(remoteAdress, challangeField, responseField);
@@ -113,15 +118,12 @@ public class UserController {
             }
         }
         if (!result.hasErrors()) {
-
-            // check if email already exists
-            logger.debug("signup error 0 " + form.getEmail());
-            if (userService.isUserExist(form.getEmail())) {
-                logger.debug("signup error 0 1" + form.getEmail());
+               if (userService.isUserExist(form.getEmail())) {
                 FieldError fieldError = new FieldError("user", "email", "email already exists");
                 result.addError(fieldError);
                 return "thy/public/signup";
             }
+               
             Users user = new Users();
             Md5PasswordEncoder encoder = new Md5PasswordEncoder();
             user.setLogin(form.getUsername());
@@ -132,7 +134,7 @@ public class UserController {
             Role role = new Role();
             role.setUser(user);
             role.setRole(2);
-
+            
             SecurityCode securityCode = new SecurityCode();
             securityCode.setUser(user);
             securityCode.setTimeRequest(new Date());
@@ -143,7 +145,7 @@ public class UserController {
 
             personal person = new personal();
             person.setUser(user);
-            person.setPhoto(new byte[0]);
+            person.setPhoto(new byte[1]);
             user.setPerson(person);
             userService.save(user);
             securityCodeRepository.save(securityCode);
@@ -154,11 +156,10 @@ public class UserController {
             return "thy/public/signup";
 
         }
-        logger.debug("Exit: createUser");
         return "thy/public/mailSent";
     }
 
-    @RequestMapping(value = "/user/profile")
+    @RequestMapping(value = "/personal/profile")
     public String userProfile() {
         return "thy/user/profile";
     }

@@ -136,10 +136,10 @@ private  Logger log;
     
     @RequestMapping(value = "/camera/qr/{userId}", method = RequestMethod.GET)
     public @ResponseBody
-    BufferedImage getQRCode(@PathVariable Long userId) throws IOException {
+    BufferedImage getQRCode(@PathVariable String userId) throws IOException {
         System.out.println("IMGDATA!"+userId);
         
-         ByteArrayOutputStream out = QRCode.from(""+userId)
+         ByteArrayOutputStream out = QRCode.from(userId)
                                         .to(ImageType.PNG).stream();
          byte[] imageInByte;
          imageInByte = out.toByteArray();

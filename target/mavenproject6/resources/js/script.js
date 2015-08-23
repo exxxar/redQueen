@@ -1,4 +1,4 @@
-var projectPath = "http://localhost:8080/redQueen";
+var projectPath = "http://94.248.11.170:8080/redQueen";
 
 function getUserByQR(qr) {
 

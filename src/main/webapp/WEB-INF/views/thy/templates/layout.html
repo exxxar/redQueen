@@ -66,8 +66,8 @@
                             <li th:if="${#authorization.expression('hasRole(''ROLE_USER'')')}">
                                 <a th:href="@{/j_spring_security_logout}" th:text="#{layout.logout}">Logout</a>
                             </li>
-                            <li th:unless="${#authorization.expression('hasRole(''ROLE_USER'')')}"><a data-toggle="modal" data-target="#signupModal"><span class="glyphicon glyphicon-user"></span> <span th:text="#{layout.signup}">Sign Up</span></a></li>
-                            <li th:unless="${#authorization.expression('hasRole(''ROLE_USER'')')}"><a data-toggle="modal" data-target="#loginModal"><span class="glyphicon glyphicon-log-in"></span> <span th:text="#{layout.login}">Login</span></a></li>
+                            <li th:unless="${#authorization.expression('hasRole(''ROLE_USER'')')}"><a th:href="@{/public/signup}"><span class="glyphicon glyphicon-user"></span> <span th:text="#{layout.signup}">Sign Up</span></a></li>
+                            <li th:unless="${#authorization.expression('hasRole(''ROLE_USER'')')}"><a th:href="@{/login}"><span class="glyphicon glyphicon-log-in"></span> <span th:text="#{layout.login}">Login</span></a></li>
                         </ul>
                     </div>
                 </div>

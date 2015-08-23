@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
         ModelAndView mav = new ModelAndView();
         mav.addObject("exception", ex);
         mav.addObject("url", req.getRequestURL());
-        mav.setViewName("thy/error/exception");
+        mav.setViewName("thy/error/Exception");
         return mav;
     }
 
@@ -35,6 +35,6 @@ public class GlobalExceptionHandler {
         logger.error("IOException handler executed");
         model.put("message", ex.toString());
         request.setAttribute("message", ex.toString());
-        return new ModelAndView("thy/error/exception");
+        return new ModelAndView("thy/error/Exception");
     }
 }

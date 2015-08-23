@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3" xmlns="http://www.w3.org/1999/xhtml">
+
+    <head th:fragment="headerFragment">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title th:text="#{layout.projectname}"></title>      
+        <meta name="description" content=""/>       
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+       
+         <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css"/>
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css"/>       
+        <link rel="stylesheet"  th:href="@{/resources/css/style.css}"/>
+        <link rel="icon" type="image/png" th:href="@{/resources/img/icon.png}" />
+        <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+        <script th:src="@{/resources/js/slider.js}"></script>
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"/>         
+        
+        <script>
+            $(document).ready(function() {
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+          
+
+
+        </script>
+    </head>
+
+    <body>
+        <!-- MENU -->
+        <div th:fragment="menuFragment">
+
+            <nav class="navbar navbar-inverse">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="#"><img th:src="@{/resources/img/logo.png}" style="height:40px;top:-12px;position: relative;"/></a>
+                    </div>
+                    <div>
+                        <ul class="nav navbar-nav">
+                            <li data-toggle="tooltip" data-placement="bottom" th:title="#{layout.hint.home}" class="active"><a th:href="@{/}" th:text="#{layout.home}"></a></li>
+                            <li data-toggle="tooltip" data-placement="bottom" th:title="#{layout.hint.about}"><a href="#" data-toggle="modal" data-target="#aboutModal" th:text="#{layout.about}"></a></li>
+                            <li data-toggle="tooltip" data-placement="bottom" th:title="#{layout.hint.contact}"><a href="#" data-toggle="modal" data-target="#contactModal" th:text="#{layout.contact}"></a></li>
+                            <li data-toggle="tooltip" data-placement="bottom" th:title="#{layout.hint.faq}"><a href="#" data-toggle="modal" data-target="#faqModal" th:text="#{layout.faq}"></a></li>
+                            <li data-toggle="tooltip" data-placement="bottom" th:if="${#authorization.expression('hasRole(''ROLE_USER'')')}" th:title="#{layout.hint.admin}"><a th:href="@{/admin/}" th:text="#{layout.admin}"></a></li>
+                            <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#" ><span th:text="#{layout.lang}"></span>
+                                    <span class="caret"></span></a>
+                                <ul class="dropdown-menu" >
+                                    <li><a th:href="@{?mylocale=en}">English</a></li>
+                                    <li><a th:href="@{?mylocale=fr}">Français</a></li>
+                                    <li><a th:href="@{?mylocale=ar}">հայերեն</a></li>
+                                    <li><a th:href="@{?mylocale=ru}">Russian</a></li> 
+                                    <li><a th:href="@{?mylocale=de}">Deutsch</a></li> 
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li th:if="${#authorization.expression('hasRole(''ROLE_USER'')')}">
+                                Logged user: <span sec:authentication="name">Bob</span>                        
+                                <span class='role-hide' sec:authentication="principal.authorities"></span>                        
+                            </li>
+                            <li th:if="${#authorization.expression('hasRole(''ROLE_USER'')')}">
+                                <a th:href="@{/j_spring_security_logout}" th:text="#{layout.logout}">Logout</a>
+                            </li>
+                            <li th:unless="${#authorization.expression('hasRole(''ROLE_USER'')')}"><a data-toggle="modal" data-target="#signupModal"><span class="glyphicon glyphicon-user"></span> <span th:text="#{layout.signup}">Sign Up</span></a></li>
+                            <li th:unless="${#authorization.expression('hasRole(''ROLE_USER'')')}"><a data-toggle="modal" data-target="#loginModal"><span class="glyphicon glyphicon-log-in"></span> <span th:text="#{layout.login}">Login</span></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav> 
+        </div>
+
+
+        <!-- FOOTER -->
+
+        <div th:fragment="footerFragment">
+            <script th:src="@{/resources/js/script.js}"></script>
+            <input type="hidden" id="_csrf" th:name="_csrf" th:value="${_csrf.token}"/>
+        </div>
+    </body>
+
+</html>

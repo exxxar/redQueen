@@ -13,14 +13,19 @@ import static com.web.mavenproject6.controller.UserController.logger;
 import com.web.mavenproject6.forms.UserForm;
 import com.web.mavenproject6.utility.EncryptionUtil;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.util.Date;
 import java.util.Locale;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
+import net.glxn.qrgen.QRCode;
+import net.glxn.qrgen.image.ImageType;
 import net.tanesha.recaptcha.ReCaptchaImpl;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
@@ -128,6 +133,23 @@ private  Logger log;
          
         return img;
     }
+    
+    @RequestMapping(value = "/camera/qr/{userId}", method = RequestMethod.GET)
+    public @ResponseBody
+    BufferedImage getQRCode(@PathVariable Long userId) throws IOException {
+        System.out.println("IMGDATA!"+userId);
+        
+         ByteArrayOutputStream out = QRCode.from(""+userId)
+                                        .to(ImageType.PNG).stream();
+         byte[] imageInByte;
+         imageInByte = out.toByteArray();
+       InputStream in = new ByteArrayInputStream(imageInByte);
+			BufferedImage img = ImageIO.read(in);
+         System.out.println("IMGDATA!loaded");
+         
+        return img;
+    }
+    
 
     @RequestMapping(value = "/camera/plist", method = RequestMethod.GET)
     public @ResponseBody
@@ -186,4 +208,6 @@ private  Logger log;
         resultJson.put("logs", ar);
         return resultJson.toString();
     }
+    
+    
 }

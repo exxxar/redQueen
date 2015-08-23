@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head th:include="thy/templates/layout :: headerFragment">
+    </head>  
+
+    <script type="text/javascript" src="http://ajaxs.ru/demo/ajax/imageload/js/ajaxupload.3.5.js"></script>
+    <script type="text/javascript" th:src="@{/resources/js/aploadScript.js}"></script>
+    <body>
+
+
+        <div th:include="thy/templates/layout :: menuFragment">
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-5 col-md-4">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading"><i class="fa fa-photo small pull-left"></i>Photo</div>
+                        <div class="panel-body"><img src="https://pp.vk.me/c622324/v622324379/3d069/I70WHInt91Q.jpg" class="img-rounded center-block avatar" alt="Cinque Terre" /></div> 
+                    </div>
+                    <div class="panel panel-primary">
+                        <div class="panel-body">
+                            <a id="upload" href="#"><i  class="fa fa-folder-open-o small "></i></a>
+                            <a id="photo" href="#"><i class="fa fa-camera small"></i></a>
+                            <a href="#" class="pull-right"><i class="fa fa-remove small "></i></a>
+                        </div> 
+
+                    </div>
+
+                    <div class="panel panel-primary">
+                        <div class="panel-body">
+                            <span id="status" ></span>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-sm-6">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading"><i class="fa fa-pencil-square-o small pull-left"></i> Panel Heading</div>
+                        <div class="panel-body">
+                            <form class="row">
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="usr">fName</label>
+                                        <input type="text" class="form-control" id="usr" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="usr">sName</label>
+                                        <input type="text" class="form-control" id="usr" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="usr">tName</label>
+                                        <input type="text" class="form-control" id="usr" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="usr">Pasport</label>
+                                        <input type="text" class="form-control" id="usr" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="usr">Address</label>
+                                        <input type="text" class="form-control" id="usr" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="comment">Comment:</label>
+                                        <textarea class="form-control" rows="5" id="comment"></textarea>
+                                    </div>
+
+
+                                </div>
+
+
+                                <div class="col-md-6">
+
+                                    <div class="form-group">
+                                        <label for="usr">Phone</label>
+                                        <input type="text" class="form-control" id="usr" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="usr">Stage</label>
+                                        <input type="text" class="form-control" id="usr" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="usr">Office</label>
+                                        <input type="text" class="form-control" id="usr" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="usr">Post</label>
+                                        <input type="text" class="form-control" id="usr" />
+                                    </div>
+
+                                    <div class="form-group"> 
+                                        <label for="select">Guests</label>
+                                        <select id="select" class="form-control" >
+                                            <option>20</option>
+                                            <option>10</option>
+                                        </select>
+                                    </div>
+
+
+                                </div>
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary">Сохранить</button>
+                                    <button class="btn btn-default">Получить пропуск</button>
+                                </div>
+                            </form>
+                        </div>	
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+
+        <div th:include="thy/templates/layout :: footerFragment">
+
+        </div>
+    </body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"      >
+    <head>
+        <title>Индивидуальный пропуск</title>
+    </head>
+
+    <style>
+        .wrapper {
+            width:100%;
+        }
+        .card {
+            background:#fff;
+            background-size:cover;
+            width:321px;
+            height:204px;
+            border:2px #cae7ff solid;//#000
+            position:relative;
+            margin:0 auto;
+        }
+
+        .card h1 {
+            font-size:12pt;
+            font-weight:bold;
+            text-align:center;
+            vertical-align:middle;
+            line-height:30%;
+            color:#000;
+        }
+
+        .item {
+            float:left;
+        }
+
+        .item:nth-of-type(1) img {
+            width:100px;
+            height:100px;
+            margin-left:0px;
+        }
+
+        .item:nth-of-type(1) p{
+            text-align:left;
+            padding-left:10px;
+            line-height:10%;
+            font-weight:bold;
+            color:#000;
+            margin-top:8px;
+            font-size:10pt;
+        }
+
+        .item:nth-of-type(2) p{
+            text-align:left;
+            line-height:10%;
+            margin-top:10px;
+            font-weight:bold;
+            color:#000;
+        }
+
+        .item:nth-of-type(2) p:nth-of-type(2n){
+            font-style:italic;
+            font-weight:100;
+            font-size:10pt;
+        }
+
+        .item:nth-of-type(3) img {
+            width:100px;
+            height:150px;
+            margin-left:10px;
+        }
+
+
+    </style>
+
+    <body>
+        <div class="wrapper">
+            <div class="card">
+                <h1>Донецкая народная республика</h1>
+                <h1>Министерство связи</h1>
+                <div class="item">
+                    <img class="propQr" th:src="@{/resources/img/qr-code.png}"/>
+                    <p>№ пропуска</p>
+                    <p class="propNumber"><i>0000001</i></p>
+                    <p class="propStart">от 24.05.2015</p>
+                    <p class="propEnd">до 24.05.2016</p>
+                </div>
+                <div class="item">
+                    <p>Фамилия</p>
+                    <p class="propTname">Савинков</p>
+                    <p>Имя</p>
+                    <p class="propFname">Никита</p>
+                    <p>Отчество</p>
+                    <p class="propSname">Алексеевич</p>
+                    <p>№ Документа</p>
+                    <p class="propDocument">ВН456223</p>
+                    <p>Допуск</p>
+                    <p class="propLevel">20</p>
+                </div>
+                <div class="item">
+                    <img class="propPhoto" th:src="@{/resources/img/no_avatar.jpg}"/>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

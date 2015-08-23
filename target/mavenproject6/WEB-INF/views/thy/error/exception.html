@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:tiles="http://www.thymeleaf.org">
+    <title>W3.CSS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" th:href="@{/resources/css/w3.css }" href="resources/css/w3.css" type="text/css"/>    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
+    
+    <body>
+            
+        <header class="w3-container blue">
+            <h1>Exception Handling</h1>
+        </header>
+
+        <section class="w3-container">
+            <h2 th:text="${url}"></h2>            
+            <p th:text="${exception.message}" class="w3-container w3-card-4 blue w3-padding"></p>  
+            <p th:each="ste : ${exception.stackTrace}" th:text="${ste}"></p>      
+        </section>
+
+    </body>
+</html> 

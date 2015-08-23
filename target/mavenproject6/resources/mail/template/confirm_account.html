@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+<body>
+<h3>Hi ${user.email}, welcome to ${websiteName}!</h3>
+
+<div>
+    To activate your account click the following link:
+    <a href="http://${host}/${projectName}/public/activation?mail=${user.email}&code=${securityCode.code}">MyOwnVenture activation</a>.
+</div>
+</body>
+
+</html>

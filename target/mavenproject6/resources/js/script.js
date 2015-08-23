@@ -1,8 +1,9 @@
 var projectPath = "http://94.248.11.170:8080/redQueen";
+var autoDiscon = false;
 
 function getUserByQR(qr) {
 
-    $.post(projectPath+"/camera/", {_csrf: $("#_csrf").val(), imgdata: "qr"}, function(data) {
+    $.post(projectPath + "/camera/", {_csrf: $("#_csrf").val(), imgdata: "qr"}, function(data) {
         var js = jQuery.parseJSON(data);
         $(".json-propNumber").html(js.user[0].propNumber);
         $(".json-propDate").html(js.user[0].propDate);
@@ -29,7 +30,7 @@ function getLogs() {
         }, 5000);
     }
 
-    $.post(projectPath+"/camera/logs", {_csrf: $("#_csrf").val()}, function(data) {
+    $.post(projectPath + "/camera/logs", {_csrf: $("#_csrf").val()}, function(data) {
         var js = jQuery.parseJSON(data);
 
         var html = "";
@@ -51,27 +52,28 @@ function extractLast(term) {
     return split(term).pop();
 }
 
-var intId = setInterval(function(){ //clearInterval(timerId);
-    var isPong = false;
-    $.post(projectPath+"/ping", {_csrf: $("#_csrf").val()}, function(data) {
-        isPong = true;  
-    });
-    var timeoutId = setTimeout(function(){
-        if (isPong==true){
-            clearTimeout(timeoutId);
-            isPong = false;           
-        }
-        else
-        {         
-            clearInterval(intId);
-            window.location.href = "./login";        
-        }
-    },5000);
-    
-},10000);
+var intId = setInterval(function() { //clearInterval(timerId);
+    if (autoDiscon == true) {
+        var isPong = false;
+        $.post(projectPath + "/ping", {_csrf: $("#_csrf").val()}, function(data) {
+            isPong = true;
+        });
+        var timeoutId = setTimeout(function() {
+            if (isPong == true) {
+                clearTimeout(timeoutId);
+                isPong = false;
+            }
+            else
+            {
+                clearInterval(intId);
+                window.location.href = "./login";
+            }
+        }, 5000);
+    }
+}, 10000);
 $(document).ready(function() {
- 
-     $(".logs").attr("time-out", false);
+
+    $(".logs").attr("time-out", false);
     $("[class*='json-prop']").html("-empty-");
     $(".json-propPhoto").attr("src", "./resources/img/no_avatar.jpg");
     setwebcam();
@@ -85,38 +87,38 @@ $(document).ready(function() {
         getLogs();
     });
 
-    $("#getPhoto").click(function(){
+    $("#getPhoto").click(function() {
         photo = true;
         captureToCanvas();
-        photo = false;      
+        photo = false;
     });
-    
-    
+
+
     $('#addGuestBtn').click(function() {
-        var personal = $("#w-personal-search").val();    
-        
+        var personal = $("#w-personal-search").val();
+
         $(".alert-main span").html("ERROR!!!!");
         $(".alert-main").removeClass("hide").addClass("show");
 
-        $.get(projectPath+"/guest", {}, function(data) {
+        $.get(projectPath + "/guest", {}, function(data) {
             $(".alert-main span").html(data);
         });
     });
 
-    $("#myphoto").dblclick(function(){
+    $("#myphoto").dblclick(function() {
         $(this).attr("src", "./resources/img/no_avatar.jpg");
-     
+
     });
-    
+
     $("#w-personal-search").autocomplete({
         source: function(request, response) {
-        
-            $.getJSON(projectPath+"/camera/plist", {
+
+            $.getJSON(projectPath + "/camera/plist", {
                 personalName: extractLast(request.term)
             }, response);
         },
         select: function(event, ui) {
-            var newWin = window.open(projectPath+"/camera/profile/"+ui.item.value,
+            var newWin = window.open(projectPath + "/camera/profile/" + ui.item.value,
                     "JSSite",
                     "width=420,height=250,location=no,status=no,resizable=no"
                     );
@@ -130,13 +132,13 @@ $(document).ready(function() {
 
     $("#s-personal-search").autocomplete({
         source: function(request, response) {
-        
-            $.getJSON(projectPath+"/camera/plist", {
+
+            $.getJSON(projectPath + "/camera/plist", {
                 personalName: extractLast(request.term)
             }, response);
         },
         select: function(event, ui) {
-            var newWin = window.open(projectPath+"/camera/profile/"+ui.item.value,
+            var newWin = window.open(projectPath + "/camera/profile/" + ui.item.value,
                     "JSSite",
                     "width=420,height=250,location=no,status=no,resizable=no"
                     );

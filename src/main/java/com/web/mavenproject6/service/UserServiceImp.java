@@ -45,11 +45,23 @@ public class UserServiceImp implements UserService{
     }
     
     @Override
-    public boolean isUserExist(String email) {
-        System.out.println("signup error we are here!"+email);        
-      
+    public boolean isUserExistByEmail(String email) {
         TypedQuery query = em.createQuery("select u from users u where u.email = :email", Users.class)
         .setParameter("email", email);
+        try {
+           query.getSingleResult();
+        }catch(Exception ee){
+              System.out.println("signup error USER"+ee);
+              return false;
+        }
+             
+    return true;
+    }
+    
+        @Override
+    public boolean isUserExistByLogin(String login) {
+        TypedQuery query = em.createQuery("select u from users u where u.login = :login", Users.class)
+        .setParameter("login", login);
         try {
            query.getSingleResult();
         }catch(Exception ee){

@@ -18,8 +18,9 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
     DataSource dataSource;
 
     @Autowired
-    private MyUserDetailsService detailsService;
-
+    private MyUserDetailsService detailsService;    
+ 
+    
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 
@@ -41,6 +42,7 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/login/**", "/public/**").permitAll()
                 .antMatchers("/resources/**").permitAll()
+                .antMatchers("/camera/**").hasRole(UserTypeEnum.SECURE.toString())
                 .antMatchers("/admin/**").hasRole(UserTypeEnum.ADMIN.toString())
                 .anyRequest().authenticated()
                 .and()

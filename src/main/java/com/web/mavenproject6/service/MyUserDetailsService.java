@@ -3,16 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.web.mavenproject6.service;
 
 /**
  *
  * @author Aleks
  */
-
-
 import com.web.mavenproject6.entities.Users;
+import com.web.mavenproject6.utility.EncryptionUtil;
 import com.web.mavenproject6.utility.UserTypeEnum;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,6 +18,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.apache.tomcat.util.security.MD5Encoder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -28,13 +27,14 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-
 @Component("myUserDetailsService")
 public class MyUserDetailsService implements UserDetailsService {
 
-   
     @PersistenceContext
     private EntityManager entityManager;
+    
+    @Autowired
+    EncryptionUtil encryptionUtil;
 
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
@@ -45,12 +45,12 @@ public class MyUserDetailsService implements UserDetailsService {
                     .setParameter("email", login)
                     .setParameter("login", login)
                     .getSingleResult();
-            
+
             boolean enabled = true;
             boolean accountNonExpired = true;
             boolean credentialsNonExpired = true;
-            boolean accountNonLocked = true;
-
+            boolean accountNonLocked = true;          
+      
             return new org.springframework.security.core.userdetails.User(
                     domainUser.getEmail(),
                     domainUser.getPassword(),
@@ -65,7 +65,8 @@ public class MyUserDetailsService implements UserDetailsService {
     }
 
     /**
-     * Retrieves a collection of {@link GrantedAuthority} based on a numerical role
+     * Retrieves a collection of {@link GrantedAuthority} based on a numerical
+     * role
      *
      * @param role the numerical role
      * @return a collection of {@link GrantedAuthority
@@ -83,20 +84,20 @@ public class MyUserDetailsService implements UserDetailsService {
      */
     public List<String> getRoles(Integer role) {
         List<String> roles = new ArrayList<>();
-        switch(role){
+        switch (role) {
             case 1:
                 roles.add(UserTypeEnum.USER.toString());
                 roles.add(UserTypeEnum.SECURE.toString());
                 roles.add(UserTypeEnum.ADMIN.toString());
                 break;
             case 2:
-                roles.add(UserTypeEnum.USER.toString());  
+                roles.add(UserTypeEnum.USER.toString());
             case 3:
-                roles.add(UserTypeEnum.USER.toString()); 
+                roles.add(UserTypeEnum.USER.toString());
                 roles.add(UserTypeEnum.SECURE.toString());
             default:
                 roles.add(UserTypeEnum.GUEST.toString());
-        }      
+        }
         return roles;
     }
 
@@ -113,6 +114,5 @@ public class MyUserDetailsService implements UserDetailsService {
         }
         return authorities;
     }
-
 
 }

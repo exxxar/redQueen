@@ -23,7 +23,10 @@ public class Users implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    
     private String password;
+    
+    @Column(unique = true)
     private String login;
 
     @Email

@@ -21,8 +21,9 @@ public interface UserService {
 
     Users findUserBySecurityCode(String email, String securityCode);
 
-    boolean isUserExist(String email);
-
+    boolean isUserExistByEmail(String email);
+    boolean isUserExistByLogin(String login);
+    
     void save(Users u);
 
     void remove(Users u);

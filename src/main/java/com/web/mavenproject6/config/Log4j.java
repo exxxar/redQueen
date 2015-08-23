@@ -61,7 +61,7 @@ public class Log4j {
     @Bean
     public Logger rootLogger() throws IOException {
         Logger logger = Logger.getRootLogger();
-        logger.setLevel(Level.DEBUG);
+        logger.setLevel(Level.INFO);
         logger.addAppender((Appender) consoleAppender());
         logger.addAppender((Appender) fileAppender());
         logger.addAppender((Appender) socketAppender());

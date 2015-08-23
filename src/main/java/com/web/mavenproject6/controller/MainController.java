@@ -8,14 +8,19 @@ package com.web.mavenproject6.controller;
 import com.web.mavenproject6.other.UserSessionComponent;
 import com.web.mavenproject6.service.UserServiceImp;
 import com.web.mavenproject6.utility.UserTypeEnum;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,6 +29,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -47,20 +53,21 @@ public class MainController {
     private UserSessionComponent userSessionComponent;
     @Autowired
     private UserServiceImp userService;
+    
+
 
     @RequestMapping(value = {"/"})
-    public String login(Model model, @RequestParam(required = false) String message) {
-        model.addAttribute("message", message);
-        
+    public String login(Model model, @RequestParam(required = false) String message) {     
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean isSecure = false;
         for (GrantedAuthority role : auth.getAuthorities()) {
+           log.info(role.getAuthority());
             if (role.getAuthority().equals("ROLE_"+UserTypeEnum.SECURE.toString()))
                 isSecure = true;
         }
         if (isSecure)
             return "thy/camera";
-        return "thy/public/profile";
+        return "thy/personal/profile";
     }
 
     @RequestMapping("/login/success")
@@ -69,14 +76,6 @@ public class MainController {
                 ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername(),
                 ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername()
         ));
-        return "thy/camera";
-    }
-
-    @RequestMapping(value = "/login/failure")
-    public String loginFailure(Model model) {
-        String message = "Login Failure!";
-        System.out.println("login failure!");
-        model.addAttribute("loginError", true);
         return "thy/camera";
     }
 
@@ -90,7 +89,7 @@ public class MainController {
     public String loginError(Model model) {
         System.out.println("login error!");
         model.addAttribute("loginError", true);
-        return "thy/camera";
+        return "thy/error/Exception";
     }
     
      @RequestMapping("/login/profile")
@@ -99,16 +98,16 @@ public class MainController {
         return "thy/public/profile";
     }
 
-    @RequestMapping("/error")
-    public String loginError() {
-        return "thy/error/error";
-    }
-
     @RequestMapping(value = "/404", method = RequestMethod.GET)
     public ModelAndView ex404() {
         return new ModelAndView("thy/error/404");
     }
 
+    @RequestMapping(value = "/405", method = RequestMethod.GET)
+    public ModelAndView ex405() {
+        return new ModelAndView("thy/error/405");
+    }
+    
     @RequestMapping(value = "/500", method = RequestMethod.GET)
     public ModelAndView ex500() {
         return new ModelAndView("thy/error/500");
@@ -130,6 +129,9 @@ public class MainController {
         return "thy/public/login";
 
     }
+    
+
+    
 
     //for 403 access denied page
 

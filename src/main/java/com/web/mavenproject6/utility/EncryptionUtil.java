@@ -5,10 +5,12 @@
  */
 package com.web.mavenproject6.utility;
 
+import com.sun.javafx.scene.layout.region.Margins.Converter;
 import java.security.GeneralSecurityException;
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
+import static org.apache.tomcat.jni.Shm.buffer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -33,6 +35,7 @@ public class EncryptionUtil {
         this.skeySpec = new SecretKeySpec(key.getBytes(), "AES");
     }
 
+  
     public byte[] encrypt(String input)
             throws GeneralSecurityException, NoSuchPaddingException {
         Cipher cipher = Cipher.getInstance("AES");

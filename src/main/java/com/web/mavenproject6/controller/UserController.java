@@ -15,8 +15,10 @@ import com.web.mavenproject6.repositories.SecurityCodeRepository;
 import com.web.mavenproject6.service.MailSenderService;
 import com.web.mavenproject6.service.MyUserDetailsService;
 import com.web.mavenproject6.service.UserServiceImp;
+import com.web.mavenproject6.utility.EncryptionUtil;
 import com.web.mavenproject6.utility.SecureUtility;
 import com.web.mavenproject6.utility.TypeActivationEnum;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -75,6 +77,7 @@ public class UserController {
 
     @Autowired
     private ReCaptchaImpl reCaptcha;
+  
 
     private static List<GrantedAuthority> AUTHORITIES = new ArrayList<GrantedAuthority>(1) {
         {
@@ -106,7 +109,7 @@ public class UserController {
             @ModelAttribute("user") @Valid UserForm form, BindingResult result,
             @RequestParam(value = "recaptcha_challenge_field", required = false) String challangeField,
             @RequestParam(value = "recaptcha_response_field", required = false) String responseField,
-            ServletRequest servletRequest) {
+            ServletRequest servletRequest) throws GeneralSecurityException {
 
      
         if (reCaptcha != null) {
@@ -118,18 +121,24 @@ public class UserController {
             }
         }
         if (!result.hasErrors()) {
-               if (userService.isUserExist(form.getEmail())) {
+               if (userService.isUserExistByEmail(form.getEmail())) {
                 FieldError fieldError = new FieldError("user", "email", "email already exists");
                 result.addError(fieldError);
                 return "thy/public/signup";
             }
                
-            Users user = new Users();
-            Md5PasswordEncoder encoder = new Md5PasswordEncoder();
+            if (userService.isUserExistByLogin(form.getEmail())) {
+                FieldError fieldError = new FieldError("user", "username", "login already exists");
+                result.addError(fieldError);
+                return "thy/public/signup";
+            }
+               
+            Users user = new Users();        
+           
             user.setLogin(form.getUsername());
             user.setEmail(form.getEmail());
             user.setEnabled(false);
-            user.setPassword(encoder.encodePassword(form.getPassword(), user.getEmail()));
+            user.setPassword(form.getPassword());
 
             Role role = new Role();
             role.setUser(user);
@@ -169,18 +178,6 @@ public class UserController {
         return "thy/user/searchContact";
     }
 
-//    @RequestMapping(value = "/pages/base/user/get",
-//            method = RequestMethod.GET)
-//    public @ResponseBody
-//    Map<String, String> get() {
-//        List<String> usernameList = userRepository.findUsername("");
-//        Map<String, String> result = new HashMap<>();
-//        for (String username : usernameList) {
-//            result.put("label", username);
-//
-//        }
-//        return result;
-//    }
     @RequestMapping(value = "/public/activation", method = RequestMethod.GET)
     @Transactional
     public String activation(@RequestParam String mail, @RequestParam String code) {
@@ -196,7 +193,7 @@ public class UserController {
             SecurityContextHolder.getContext().setAuthentication(auth);
             userSessionComponent.setCurrentUser(user);
             logger.debug("Exit: activation");
-            return "thy/user/profile";
+            return "thy/personal/profile";
         }
         logger.debug("Exit: activation");
         return "thy/error/error";

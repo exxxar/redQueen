@@ -44,7 +44,7 @@
                             <li data-toggle="tooltip" data-placement="bottom" th:title="#{layout.hint.about}"><a href="#" data-toggle="modal" data-target="#aboutModal" th:text="#{layout.about}"></a></li>
                             <li data-toggle="tooltip" data-placement="bottom" th:title="#{layout.hint.contact}"><a href="#" data-toggle="modal" data-target="#contactModal" th:text="#{layout.contact}"></a></li>
                             <li data-toggle="tooltip" data-placement="bottom" th:title="#{layout.hint.faq}"><a href="#" data-toggle="modal" data-target="#faqModal" th:text="#{layout.faq}"></a></li>
-                            <li data-toggle="tooltip" data-placement="bottom" th:if="${#authorization.expression('hasRole(''ADMIN'')')}" th:title="#{layout.hint.admin}"><a th:href="@{/admin/}" th:text="#{layout.admin}"></a></li>
+                            <li data-toggle="tooltip" data-placement="bottom" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}" th:title="#{layout.hint.admin}"><a th:href="@{/admin/}" th:text="#{layout.admin}"></a></li>
                             <li class="dropdown">
                                 <a class="dropdown-toggle" data-toggle="dropdown" href="#" ><span th:text="#{layout.lang}"></span>
                                     <span class="caret"></span></a>
@@ -59,15 +59,15 @@
                         </ul>
 
                         <ul class="nav navbar-nav navbar-right">
-                            <li th:if="${#authorization.expression('hasRole(''USER'')')}">
+                            <li th:if="${#authorization.expression('hasRole(''ROLE_USER'')')}">
                                 Logged user: <span sec:authentication="name">Bob</span>                        
                                 <span class='role-hide' sec:authentication="principal.authorities"></span>                        
                             </li>
-                            <li th:if="${#authorization.expression('hasRole(''USER'')')}">
+                            <li th:if="${#authorization.expression('hasRole(''ROLE_USER'')')}">
                                 <a th:href="@{/j_spring_security_logout}" th:text="#{layout.logout}">Logout</a>
                             </li>
-                            <li th:unless="${#authorization.expression('hasRole(''USER'')')}"><a th:href="@{/public/signup}"><span class="glyphicon glyphicon-user"></span> <span th:text="#{layout.signup}">Sign Up</span></a></li>
-                            <li th:unless="${#authorization.expression('hasRole(''USER'')')}"><a th:href="@{/login}"><span class="glyphicon glyphicon-log-in"></span> <span th:text="#{layout.login}">Login</span></a></li>
+                            <li th:unless="${#authorization.expression('hasRole(''ROLE_USER'')')}"><a th:href="@{/public/signup}"><span class="glyphicon glyphicon-user"></span> <span th:text="#{layout.signup}">Sign Up</span></a></li>
+                            <li th:unless="${#authorization.expression('hasRole(''ROLE_USER'')')}"><a th:href="@{/login}"><span class="glyphicon glyphicon-log-in"></span> <span th:text="#{layout.login}">Login</span></a></li>
                         </ul>
                     </div>
                 </div>

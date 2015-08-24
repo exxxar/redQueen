@@ -1,4 +1,4 @@
-var projectPath = "http://localhost:8080/redQueen";
+var projectPath = "http://94.248.40.55:8080/redQueen";
 var autoDiscon = false;
 
 function saveProfile() {

@@ -18,6 +18,7 @@ import com.web.mavenproject6.service.UserServiceImp;
 import com.web.mavenproject6.utility.EncryptionUtil;
 import com.web.mavenproject6.utility.SecureUtility;
 import com.web.mavenproject6.utility.TypeActivationEnum;
+import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,12 +27,10 @@ import javax.servlet.ServletRequest;
 import javax.validation.Valid;
 import net.tanesha.recaptcha.ReCaptchaImpl;
 import net.tanesha.recaptcha.ReCaptchaResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.GrantedAuthorityImpl;
@@ -44,9 +43,11 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  *
@@ -55,8 +56,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class UserController {
 
-    static final Logger logger = LoggerFactory.getLogger(UserController.class);
+    @Qualifier("rootLogger")
+    @Autowired
+    private org.apache.log4j.Logger log;
 
+    
     @Autowired
     Environment env;
     
@@ -180,8 +184,8 @@ public class UserController {
 
     @RequestMapping(value = "/public/activation", method = RequestMethod.GET)
     @Transactional
-    public String activation(@RequestParam String mail, @RequestParam String code) {
-        logger.debug("Enter: activation");
+    public String activation(@RequestParam String mail, @RequestParam String code,Model model) {
+        log.debug("Enter: activation");
         if (userService.findUserBySecurityCode(mail, code) != null) {
             Users user = userService.getRepository().findUserByEmail(mail);
             user.setEnabled(true);
@@ -192,10 +196,11 @@ public class UserController {
             Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, user.getPassword(), AUTHORITIES);
             SecurityContextHolder.getContext().setAuthentication(auth);
             userSessionComponent.setCurrentUser(user);
-            logger.debug("Exit: activation");
+            log.debug("Exit: activation");
+            model.addAttribute("propId", "000001");
             return "thy/personal/profile";
         }
-        logger.debug("Exit: activation");
+        log.debug("Exit: activation");
         return "thy/error/error";
 
     }

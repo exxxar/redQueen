@@ -9,7 +9,6 @@ package com.web.mavenproject6.controller;
  *
  * @author Aleks
  */
-import static com.web.mavenproject6.controller.UserController.logger;
 import com.web.mavenproject6.forms.UserForm;
 import com.web.mavenproject6.utility.EncryptionUtil;
 import java.awt.image.BufferedImage;
@@ -61,7 +60,7 @@ private  Logger log;
         if (!model.containsAttribute("user")) {
             model.addAttribute("user", new UserForm());
         }
-        logger.debug("Check: reCaptcha {}", reCaptcha != null);
+        log.debug("Check: reCaptcha "+ (reCaptcha != null));
         if (reCaptcha != null) {
             model.addAttribute("recaptcha", reCaptcha.createRecaptchaHtml(null, null));
         }
@@ -107,10 +106,10 @@ private  Logger log;
         return resultJson.toString();
     }
 
-    @RequestMapping(value = {"/camera/profile/{userId}"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/skiper/{userId}"}, method = RequestMethod.GET)
     public ModelAndView getProfile(@PathVariable("userId") String userId) {
 
-        ModelAndView model = new ModelAndView("thy/user/profile");
+        ModelAndView model = new ModelAndView("thy/user/skiper");
  
         model.addObject("propNumber", "0000001");
         model.addObject("propStart", "24.05.2015");
@@ -124,7 +123,7 @@ private  Logger log;
 
     }
     
-    @RequestMapping(value = "/camera/avatar/{userId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/avatar/{userId}", method = RequestMethod.GET)
     public @ResponseBody
     BufferedImage getFile(@PathVariable Long userId) throws IOException {
         System.out.println("IMGDATA!"+userId);
@@ -134,7 +133,7 @@ private  Logger log;
         return img;
     }
     
-    @RequestMapping(value = "/camera/qr/{userId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/qr/{userId}", method = RequestMethod.GET)
     public @ResponseBody
     BufferedImage getQRCode(@PathVariable String userId) throws IOException {
         System.out.println("IMGDATA!"+userId);

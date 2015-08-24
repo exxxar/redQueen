@@ -1,6 +1,56 @@
-var projectPath = "http://94.248.11.170:8080/redQueen";
+var projectPath = "http://localhost:8080/redQueen";
 var autoDiscon = false;
 
+function saveProfile() {
+    var fname = $("#fname");
+    var sname = $("#sname");
+    var tname = $("#tname");
+    var pasport = $("#pasport");
+    var address = $("#address");
+    var comment = $("#comment");
+    var phone = $("#phone");
+    var stage = $("#stage");
+    var office = $("#office");
+    var post = $("#post");
+    
+    $.post(projectPath + "/profile/update", {_csrf: $("#_csrf").val(), imgdata: "qr"}, function(data) {
+        
+    });
+}
+
+function loadProfile() {
+   
+    var fname = $("#fname");
+    var sname = $("#sname");
+    var tname = $("#tname");
+    var pasport = $("#pasport");
+    var address = $("#address");
+    var comment = $("#comment");
+    var phone = $("#phone");
+    var stage = $("#stage");
+    var office = $("#office");
+    var post = $("#post");
+    var propId = $("#propId");    
+    alert(projectPath+"/avatar/" + propId.val());
+     $("#photo").attr("src", projectPath+"/avatar/" + propId.val());   
+     $("#photo-qr").attr("src", projectPath+"/qr/" + propId.val());   
+    
+    $.post(projectPath + "/personal/profile/1", {_csrf: $("#_csrf").val()}, function(data) {
+        var js = jQuery.parseJSON(data);
+        fname.val(js.user[0].fname);
+        sname.val(js.user[0].sname);
+        tname.val(js.user[0].tname);
+        pasport.val(js.user[0].pasport);
+        address.val(js.user[0].address);
+        comment.val(js.user[0].comment);
+        phone.val(js.user[0].phone);
+        stage.val(js.user[0].stage);
+        office.val(js.user[0].office);
+        post.val(js.user[0].post);
+        propId.val(js.user[0].propId);
+          
+    });
+}
 function getUserByQR(qr) {
 
     $.post(projectPath + "/camera/", {_csrf: $("#_csrf").val(), imgdata: "qr"}, function(data) {
@@ -118,7 +168,7 @@ $(document).ready(function() {
             }, response);
         },
         select: function(event, ui) {
-            var newWin = window.open(projectPath + "/camera/profile/" + ui.item.value,
+            var newWin = window.open(projectPath + "/profile/" + ui.item.value,
                     "JSSite",
                     "width=420,height=250,location=no,status=no,resizable=no"
                     );

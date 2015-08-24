@@ -61,12 +61,13 @@ public class MainController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean isSecure = false;
         for (GrantedAuthority role : auth.getAuthorities()) {
-           log.info(role.getAuthority());
-            if (role.getAuthority().equals("ROLE_"+UserTypeEnum.SECURE.toString()))
+            if (role.getAuthority().equals("ROLE_SECURE"))
                 isSecure = true;
         }
         if (isSecure)
             return "thy/camera";
+        
+        model.addAttribute("propId", "000001");
         return "thy/personal/profile";
     }
 
@@ -94,7 +95,7 @@ public class MainController {
     
      @RequestMapping("/login/profile")
     public String profileUser(Model model) {
-        
+   
         return "thy/public/profile";
     }
 
@@ -120,20 +121,9 @@ public class MainController {
         if (logout != null) {
             return "thy/public/logout";
         }
-//           Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//                  if (!(auth instanceof AnonymousAuthenticationToken)){             
-//             
-//                        return   "redirect:/thy/camera";
-//            } 
-
         return "thy/public/login";
 
     }
-    
-
-    
-
-    //for 403 access denied page
 
     @RequestMapping(value = "/403", method = RequestMethod.GET)
     public ModelAndView accesssDenied() {

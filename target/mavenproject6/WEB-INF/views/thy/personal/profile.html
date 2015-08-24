@@ -4,7 +4,7 @@
     </head>  
     <script type="text/javascript" src="http://ajaxs.ru/demo/ajax/imageload/js/ajaxupload.3.5.js"></script>
     <script type="text/javascript" th:src="@{/resources/js/aploadScript.js}"></script>
-    <body>
+    <body onload="loadProfile();">
         <div th:include="thy/templates/layout :: menuFragment">
         </div>
         <div class="container">
@@ -12,7 +12,7 @@
                 <div class="col-sm-5 col-md-4">
                     <div class="panel panel-primary">
                         <div class="panel-heading"><i class="fa fa-photo small pull-left"></i><span th:text="#{page.profile.photo}">Photo</span></div>
-                        <div class="panel-body"><img src="https://pp.vk.me/c622324/v622324379/3d069/I70WHInt91Q.jpg" class="img-rounded center-block avatar" alt="Cinque Terre" /></div> 
+                        <div class="panel-body"><img src="https://pp.vk.me/c622324/v622324379/3d069/I70WHInt91Q.jpg" style="width:230px;height:300px;" id="photo" class="img-rounded center-block avatar" alt="Cinque Terre" /></div> 
                     </div>
                     <div class="panel panel-primary">
                         <div class="panel-body">
@@ -38,33 +38,33 @@
 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="usr" th:text="#{page.profile.info.fname}" >fName</label>
-                                        <input type="text" class="form-control" id="usr" th:placeholder="#{page.profile.info.placeholder.fname}"/>
+                                        <label for="fname" th:text="#{page.profile.info.fname}" >fName</label>
+                                        <input type="text" class="form-control" id="fname" th:placeholder="#{page.profile.info.placeholder.fname}"/>
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="usr" th:text="#{page.profile.info.sname}" >sName</label>
-                                        <input type="text" class="form-control" id="usr" th:placeholder="#{page.profile.info.placeholder.sname}"/>
+                                        <label for="sname" th:text="#{page.profile.info.sname}" >sName</label>
+                                        <input type="text" class="form-control" id="sname" th:placeholder="#{page.profile.info.placeholder.sname}"/>
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="usr" th:text="#{page.profile.info.tname}" >tName</label>
-                                        <input type="text" class="form-control" id="usr" th:placeholder="#{page.profile.info.placeholder.tname}"/>
+                                        <label for="tname" th:text="#{page.profile.info.tname}" >tName</label>
+                                        <input type="text" class="form-control" id="tname" th:placeholder="#{page.profile.info.placeholder.tname}"/>
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="usr" th:text="#{page.profile.info.pasport}" >Pasport</label>
-                                        <input type="text" class="form-control" id="usr" th:placeholder="#{page.profile.info.placeholder.fname}"/>
+                                        <label for="pasport" th:text="#{page.profile.info.pasport}" >Pasport</label>
+                                        <input type="text" class="form-control" id="pasport" th:placeholder="#{page.profile.info.placeholder.fname}"/>
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="usr" th:text="#{page.profile.info.address}">Address</label>
-                                        <input type="text" class="form-control" id="usr" th:placeholder="#{page.profile.info.placeholder.address}"/>
+                                        <label for="address" th:text="#{page.profile.info.address}">Address</label>
+                                        <input type="text" class="form-control" id="address" th:placeholder="#{page.profile.info.placeholder.address}"/>
                                     </div>
 
                                     <div class="form-group">
                                         <label for="comment" th:text="#{page.profile.info.comment}">Comment:</label>
-                                        <textarea class="form-control" rows="5" id="comment" th:placeholder="#{page.profile.info.placeholder.comment}"></textarea>
+                                        <textarea class="form-control" rows="5" id="comment" style="height:175px;max-width: 295px;max-height: 295px;" th:placeholder="#{page.profile.info.placeholder.comment}"></textarea>
                                     </div>
 
 
@@ -74,33 +74,35 @@
                                 <div class="col-md-6">
 
                                     <div class="form-group">
-                                        <label for="usr" th:text="#{page.profile.info.phone}">Phone</label>
-                                        <input type="text" class="form-control" id="usr" th:placeholder="#{page.profile.info.placeholder.phone}"/>
+                                        <label for="phone" th:text="#{page.profile.info.phone}">Phone</label>
+                                        <input type="text" class="form-control" id="phone" th:placeholder="#{page.profile.info.placeholder.phone}"/>
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="usr" th:text="#{page.profile.info.stage}">Stage</label>
-                                        <input type="text" class="form-control" id="usr" th:placeholder="#{page.profile.info.placeholder.stage}"/>
+                                        <label for="stage" th:text="#{page.profile.info.stage}">Stage</label>
+                                        <input type="text" class="form-control" id="stage" th:placeholder="#{page.profile.info.placeholder.stage}"/>
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="usr" th:text="#{page.profile.info.office}">Office</label>
-                                        <input type="text" class="form-control" id="usr" th:placeholder="#{page.profile.info.placeholder.office}"/>
+                                        <label for="office" th:text="#{page.profile.info.office}">Office</label>
+                                        <input type="text" class="form-control" id="office" th:placeholder="#{page.profile.info.placeholder.office}"/>
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="usr" th:text="#{page.profile.info.post}">Post</label>
-                                        <input type="text" class="form-control" id="usr" th:placeholder="#{page.profile.info.placeholder.post}"/>
+                                        <label for="post" th:text="#{page.profile.info.post}">Post</label>
+                                        <input type="text" class="form-control" id="post" th:placeholder="#{page.profile.info.placeholder.post}"/>
                                     </div>
 
                                     <div class="form-group"> 
-                                        <label for="select" th:text="#{page.profile.info.guests}">Guests</label>
-                                        <select id="select" class="form-control" >          
+                                        <label for="guests" th:text="#{page.profile.info.guests}">Guests</label>
+                                        <select id="guests" class="form-control" >          
                                         </select>
                                     </div>
-                                    <img src="" alt="" class="img-thumbnail center-block" width="200" height="200"/>    
+                                    <img src="" alt="" id="photo-qr"  class="img-thumbnail center-block" style="width: 200px;height: 200px;"/>    
 
                                 </div>
+                                
+                                <input type="hidden" class="form-control" id="propId" th:value="${propId}"/>
                                 <div class="col-md-12">
                                     <button class="btn btn-primary" th:text="#{page.profile.info.save}">Сохранить</button>
                                     <button class="btn btn-default" th:text="#{page.profile.info.takeskip}">Получить пропуск</button>
@@ -114,7 +116,7 @@
 
             </div>
         </div>
-
+       
         <div th:include="thy/templates/layout :: footerFragment">
 
         </div>

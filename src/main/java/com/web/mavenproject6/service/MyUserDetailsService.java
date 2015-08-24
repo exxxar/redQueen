@@ -86,17 +86,18 @@ public class MyUserDetailsService implements UserDetailsService {
         List<String> roles = new ArrayList<>();
         switch (role) {
             case 1:
-                roles.add(UserTypeEnum.USER.toString());
-                roles.add(UserTypeEnum.SECURE.toString());
-                roles.add(UserTypeEnum.ADMIN.toString());
+                roles.add("ROLE_USER");
+                roles.add("ROLE_SECURE");
+                roles.add("ROLE_ADMIN");
                 break;
             case 2:
-                roles.add(UserTypeEnum.USER.toString());
+                roles.add("ROLE_USER");               
+                break;
             case 3:
-                roles.add(UserTypeEnum.USER.toString());
-                roles.add(UserTypeEnum.SECURE.toString());
-            default:
-                roles.add(UserTypeEnum.GUEST.toString());
+                roles.add("ROLE_USER");
+                roles.add("ROLE_SECURE");
+                break;   
+                
         }
         return roles;
     }

@@ -17,7 +17,7 @@
                     <div class="panel panel-primary">
                         <div class="panel-body">
                             <a id="upload" href="#"><i  class="fa fa-folder-open-o small "></i></a>
-                            <a id="photo" href="#"><i class="fa fa-camera small"></i></a>
+                            <a id="take-photo" href="#"><i class="fa fa-camera small"></i></a>
                             <a href="#" class="pull-right"><i class="fa fa-remove small "></i></a>
                         </div> 
 
@@ -104,8 +104,8 @@
                                 
                                 <input type="hidden" class="form-control" id="propId" th:value="${propId}"/>
                                 <div class="col-md-12">
-                                    <button class="btn btn-primary" th:text="#{page.profile.info.save}">Сохранить</button>
-                                    <button class="btn btn-default" th:text="#{page.profile.info.takeskip}">Получить пропуск</button>
+                                    <a class="btn btn-primary" href="#" id="save-profile" th:text="#{page.profile.info.save}">Сохранить</a>
+                                    <a class="btn btn-default" href="#" id="take-skiper" th:text="#{page.profile.info.takeskip}">Получить пропуск</a>
                                 </div>
                             </form>
                         </div>	
@@ -120,5 +120,6 @@
         <div th:include="thy/templates/layout :: footerFragment">
 
         </div>
+         <script th:src="@{/resources/js/profileScript.js}"></script>
     </body>
 </html>

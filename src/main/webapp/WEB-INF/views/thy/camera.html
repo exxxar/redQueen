@@ -6,7 +6,7 @@
 
 
 
-    <body>
+    <body onload="loadCameraPage();">
 
         <div th:include="thy/templates/layout :: menuFragment">
         </div>
@@ -339,10 +339,11 @@
         <div th:include="thy/templates/layout :: footerFragment">
 
         </div>
+        
         <script type="text/javascript" th:src="@{/resources/assets/camera/llqrcode.js}"></script>
         <script type="text/javascript" th:src="@{/resources/assets/camera/webqr.js}"></script>
         <script type="text/javascript">load();</script>
-
+        <script th:src="@{/resources/js/cameraScript.js}"></script>
     </body>
 
 </html>

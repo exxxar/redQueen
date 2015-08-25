@@ -171,12 +171,12 @@ public class UserController {
         }
         return "thy/public/mailSent";
     }
-
-    @RequestMapping(value = "/personal/profile")
-    public String userProfile() {
-        return "thy/user/profile";
+        
+    @RequestMapping(value = "/profile/update", method = RequestMethod.POST)
+    public String userProfileUpdate(@RequestParam String data) {
+        System.out.println("JSONDATA"+data);
+        return "thy/personal/profile";
     }
-
     @RequestMapping(value = "/user/searchContact")
     public String searchContact() {
         return "thy/user/searchContact";

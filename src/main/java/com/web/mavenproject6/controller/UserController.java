@@ -15,10 +15,8 @@ import com.web.mavenproject6.repositories.SecurityCodeRepository;
 import com.web.mavenproject6.service.MailSenderService;
 import com.web.mavenproject6.service.MyUserDetailsService;
 import com.web.mavenproject6.service.UserServiceImp;
-import com.web.mavenproject6.utility.EncryptionUtil;
 import com.web.mavenproject6.utility.SecureUtility;
 import com.web.mavenproject6.utility.TypeActivationEnum;
-import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,6 +25,8 @@ import javax.servlet.ServletRequest;
 import javax.validation.Valid;
 import net.tanesha.recaptcha.ReCaptchaImpl;
 import net.tanesha.recaptcha.ReCaptchaResponse;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
@@ -43,11 +43,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  *
@@ -173,8 +171,13 @@ public class UserController {
     }
         
     @RequestMapping(value = "/profile/update", method = RequestMethod.POST)
-    public String userProfileUpdate(@RequestParam String data) {
+    public String userProfileUpdate(@RequestParam String data)  throws JSONException{
         System.out.println("JSONDATA"+data);
+
+        JSONObject o = new JSONObject(data);
+        log.info(data);
+        log.info(o.get("propId"));
+        
         return "thy/personal/profile";
     }
     @RequestMapping(value = "/user/searchContact")

@@ -24,10 +24,10 @@ function saveProfile() {
     var office = $("#office");
     var post = $("#post");
     var propId = $("#propId");    
-    var sendingData = "{'fname':'"+fname.val()+"','sname':'"+sname.val()
-            +"','tname':'"+tname.val()+"','pasport':'"+pasport+"','address':'"+address
-            +"','comment':'"+comment.val()+"','phone':'"+phone.val()+"','stage':'"+stage.val()
-            +"','office':'"+office.val()+"','post':'"+post.val()+"','propId':'"+propId.val()+"'}";
+    var sendingData = "{\"fname\":\""+fname.val()+"\",\"sname\":\""+sname.val()
+            +"\",\"tname\":\""+tname.val()+"\",\"pasport\":\""+pasport.val()+"\",\"address\":\""+address.val()
+            +"\",\"comment\":\""+comment.val()+"\",\"phone\":\""+phone.val()+"\",\"stage\":\""+stage.val()
+            +"\",\"office\":\""+office.val()+"\",\"post\":\""+post.val()+"\",\"propId\":\""+propId.val()+"\"}";
     alert(sendingData);
     $.post(projectPath + "/profile/update", {_csrf: $("#_csrf").val(), data: sendingData}, function(data) {
         $("#status").html("Информация успешно обновлена.");

@@ -8,6 +8,7 @@ package com.web.mavenproject6.service;
 
 import com.web.mavenproject6.entities.personal;
 import com.web.mavenproject6.repositories.PersonalRepository;
+import java.util.List;
 
 /**
  *
@@ -15,6 +16,8 @@ import com.web.mavenproject6.repositories.PersonalRepository;
  */
 public interface PersonalService {
     PersonalRepository getRepository();
-    personal findBySNP(String surname, String name, String patronymic);
+    personal findByFST(String fname, String sname, String tname);
+    personal findByAccessNumber(String accessNumber);
+    List<personal> getAll();
     void add(personal p);
 }

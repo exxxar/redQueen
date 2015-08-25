@@ -1,7 +1,6 @@
 package com.web.mavenproject6.config;
 
 import com.web.mavenproject6.service.MyUserDetailsService;
-import com.web.mavenproject6.utility.UserTypeEnum;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;

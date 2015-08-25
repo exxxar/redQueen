@@ -2,11 +2,11 @@ $(function() {
     var btnUpload = $('#upload');
     var status = $('#status');
     new AjaxUpload(btnUpload, {
-        action: 'upload-file.php',
+        action: 'http://localhost:8080/profile/upload?_csrf='+$("#_csrf").val(),
         name: 'uploadfile',
         data: {},
         onSubmit: function(file, ext) {
-
+           alert($("#_csrf").val());
             if (!(ext && /^(jpg|png|jpeg|gif)$/.test(ext))) {
                 // extension is not allowed 
                 status.text('Поддерживаемые форматы JPG, PNG или GIF');

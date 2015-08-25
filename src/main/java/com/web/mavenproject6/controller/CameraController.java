@@ -109,7 +109,7 @@ private  Logger log;
     @RequestMapping(value = {"/skiper/{userId}"}, method = RequestMethod.GET)
     public ModelAndView getProfile(@PathVariable("userId") String userId) {
 
-        ModelAndView model = new ModelAndView("thy/user/skiper");
+        ModelAndView model = new ModelAndView("thy/personal/skiper");
  
         model.addObject("propNumber", "0000001");
         model.addObject("propStart", "24.05.2015");
@@ -139,7 +139,7 @@ private  Logger log;
         System.out.println("IMGDATA!"+userId);
         
          ByteArrayOutputStream out = QRCode.from(userId)
-                                        .to(ImageType.PNG).stream();
+                                        .to(ImageType.JPG).stream();
          byte[] imageInByte;
          imageInByte = out.toByteArray();
        InputStream in = new ByteArrayInputStream(imageInByte);

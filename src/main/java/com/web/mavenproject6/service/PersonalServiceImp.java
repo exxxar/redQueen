@@ -5,9 +5,12 @@
  */
 package com.web.mavenproject6.service;
 
+import com.web.mavenproject6.entities.Users;
 import com.web.mavenproject6.entities.personal;
 import com.web.mavenproject6.repositories.PersonalRepository;
+import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,17 +33,32 @@ public class PersonalServiceImp implements PersonalService {
     }
 
     @Override
-    public personal findBySNP(String surname, String name, String patronymic) {
-        return (personal) em.createQuery("from personal where surname = :surname and"
-                + " name = :name and patronymic = :patronymic")
-                .setParameter("surname", surname)
-                .setParameter("name", name)
-                .setParameter("patronymic", patronymic)
+    public personal findByFST(String fname, String sname, String tname) {
+        return (personal) em.createQuery("from personal where fname = :fname and"
+                + " sname = :sname and tname = :tname")
+                .setParameter("fname",fname )
+                .setParameter("sname", sname)
+                .setParameter("tname", tname)
                 .getSingleResult();
     }
 
+    
     @Override
     public void add(personal p) {
        personalRepository.save(p);
     }
+
+    @Override
+    public personal findByAccessNumber(String accessNumber) {
+        TypedQuery query = em.createQuery("select p from personal p where p.accessNumber = ?1", personal.class);
+        query.setParameter(1, accessNumber);    
+        return (personal) query.getSingleResult();
+    }
+
+    @Override
+    public List<personal> getAll() {
+          return (List<personal>) personalRepository.findAll();
+    }
+
+   
 }

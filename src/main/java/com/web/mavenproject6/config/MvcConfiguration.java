@@ -34,6 +34,7 @@ import org.springframework.ui.velocity.VelocityEngineFactoryBean;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ViewResolver;
@@ -92,6 +93,7 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter implements Schedul
         bufferedImage.setDefaultContentType(MediaType.IMAGE_JPEG);
         converters.add(bufferedImage);
         
+     
 //        
 //         <bean class="org.springframework.http.converter.FormHttpMessageConverter"/>
 //                <bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter"/>
@@ -104,9 +106,17 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter implements Schedul
 //                <bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"/>
         
         ByteArrayHttpMessageConverter byteArray = new ByteArrayHttpMessageConverter();
-        byteArray.setSupportedMediaTypes(Arrays.asList(MediaType.IMAGE_JPEG,MediaType.IMAGE_PNG));
+        byteArray.setSupportedMediaTypes(Arrays.asList(MediaType.IMAGE_JPEG,MediaType.IMAGE_PNG,MediaType.APPLICATION_OCTET_STREAM,MediaType.MULTIPART_FORM_DATA,MediaType.ALL));
         converters.add(byteArray);
     }
+    
+    
+//    @Bean
+//    public CommonsMultipartResolver multipartResolver(){
+//        CommonsMultipartResolver r = new CommonsMultipartResolver();
+//        r.setMaxUploadSize(1024000000);
+//        return r;
+//    }
 
     @Bean
     public TemplateResolver templateResolver() {

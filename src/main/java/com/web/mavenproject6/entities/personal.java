@@ -6,6 +6,7 @@
 package com.web.mavenproject6.entities;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -67,6 +68,8 @@ public class personal implements Serializable {
     private byte[] photo;
 
     private boolean isActive;
+
+    private Date lastUpdate;
 
     @Length(max = 255)
     private String info;
@@ -209,8 +212,14 @@ public class personal implements Serializable {
     public void setAccessNumber(String accessNumber) {
         this.accessNumber = accessNumber;
     }
-    
-    
+
+    public Date getLastUpdate() {
+        return lastUpdate;
+    }
+
+    public void setLastUpdate(Date lastUpdate) {
+        this.lastUpdate = lastUpdate;
+    }
 
     public personal() {
         this.accessNumber = "";
@@ -228,9 +237,10 @@ public class personal implements Serializable {
         this.isActive = false;
         this.info = "";
         this.user = null;
+        this.lastUpdate = new Date();
     }
 
-    public personal(String accessNumber,String tname, String sname, String fname, String phone, String addres, String post, String office, String stage, String passportSeria, String passportNum, byte[] photo, boolean isActive, String info, Users user) {
+    public personal(String accessNumber, String tname, String sname, String fname, String phone, String addres, String post, String office, String stage, String passportSeria, String passportNum, byte[] photo, boolean isActive, String info, Users user) {
         this.accessNumber = accessNumber;
         this.tname = tname;
         this.sname = sname;
@@ -246,13 +256,17 @@ public class personal implements Serializable {
         this.isActive = isActive;
         this.info = info;
         this.user = user;
+        this.lastUpdate = new Date();
     }
-
-    public String toJSON() throws JSONException {
+    
+  
+    @Override
+    public String toString(){
         JSONObject person = new JSONObject();
+        try {       
         person
                 .put("personal_id", personal_id)
-                .put("accessNumber",accessNumber)
+                .put("accessNumber", accessNumber)
                 .put("fname", fname)
                 .put("fname", fname)
                 .put("sname", sname)
@@ -264,18 +278,25 @@ public class personal implements Serializable {
                 .put("stage", stage)
                 .put("passportSeria", passportSeria)
                 .put("passportNum", passportNum)
-                .put("photo", photo.length > 1 ? "exist" : "not exist")
+                //.put("photo", photo.length > 1 ? "exist" : "not exist")
                 .put("isActive", isActive)
                 .put("info", info)
-                .put("user", user.toJSON());
-        
-                JSONArray ar = new JSONArray();
-                for(guest g:getGuests())
-                    ar.put(g.toJSON());
-                person.put("guests",ar);
-   
-        
-        return person.toString();
+                //.put("user", user.toJSON())
+                .put("lastUpdate", lastUpdate);
+//
+//        if (getGuests() != null) {
+//            JSONArray ar = new JSONArray();
+//            for (guest g : getGuests()) {
+//                ar.put(g.toJSON());
+//            }
+//            person.put("guests", ar);
+//        }
+          return (new JSONObject()).put("personal", person).toString();
+        }
+        catch(Exception e){
+            
+        }
+        return "";
     }
 
 }

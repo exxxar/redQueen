@@ -11,7 +11,6 @@ package com.web.mavenproject6.service;
  */
 import com.web.mavenproject6.entities.Users;
 import com.web.mavenproject6.utility.EncryptionUtil;
-import com.web.mavenproject6.utility.UserTypeEnum;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

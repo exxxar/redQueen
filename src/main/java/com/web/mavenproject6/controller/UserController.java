@@ -14,14 +14,19 @@ import com.web.mavenproject6.other.UserSessionComponent;
 import com.web.mavenproject6.repositories.SecurityCodeRepository;
 import com.web.mavenproject6.service.MailSenderService;
 import com.web.mavenproject6.service.MyUserDetailsService;
+import com.web.mavenproject6.service.PersonalService;
+import com.web.mavenproject6.service.PersonalServiceImp;
 import com.web.mavenproject6.service.UserServiceImp;
 import com.web.mavenproject6.utility.SecureUtility;
 import com.web.mavenproject6.utility.TypeActivationEnum;
+import java.io.File;
+import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import net.tanesha.recaptcha.ReCaptchaImpl;
 import net.tanesha.recaptcha.ReCaptchaResponse;
@@ -46,6 +51,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -64,6 +71,9 @@ public class UserController {
     
     @Autowired
     UserServiceImp userService;
+    
+     @Autowired
+    PersonalService personalService;
 
     @Autowired
     SecurityCodeRepository securityCodeRepository;
@@ -156,6 +166,7 @@ public class UserController {
 
             personal person = new personal();
             person.setUser(user);
+            person.setAccessNumber(formatNum(""+user.getId()));
             person.setPhoto(new byte[1]);
             user.setPerson(person);
             userService.save(user);
@@ -169,20 +180,62 @@ public class UserController {
         }
         return "thy/public/mailSent";
     }
+//      
+        @ResponseBody
+	@RequestMapping(value = "/profile/upload", method = RequestMethod.POST)
+	public void handleUpload(
+            @RequestParam(value = "uploadfile", required = false) MultipartFile uploadfile,
+            HttpServletResponse httpServletResponse) {
+ 
+            System.err.println("JSONDATAFILE!!");
+        String orgName = uploadfile.getOriginalFilename();
+        String filePlaceToUpload = "c:\\1\\";
+        System.err.println("JSONDATAFILE!!2"+orgName);
+        String filePath = filePlaceToUpload + orgName;
+        File dest = new File(filePath);
+        try {
+            uploadfile.transferTo(dest);
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+    }
         
     @RequestMapping(value = "/profile/update", method = RequestMethod.POST)
-    public String userProfileUpdate(@RequestParam String data)  throws JSONException{
-        System.out.println("JSONDATA"+data);
-
-        JSONObject o = new JSONObject(data);
-        log.info(data);
-        log.info(o.get("propId"));
-        
-        return "thy/personal/profile";
+    @ResponseBody
+    public String userProfileUpdate(@RequestParam("sdata") String sdata)  throws JSONException{
+System.out.println("JSONDATA1"+sdata);
+        JSONObject o = new JSONObject(sdata);        
+        System.out.println("JSONDATA12 "+(String) o.get("propId"));
+        personal p = personalService.findByAccessNumber((String) o.get("propId"));          
+        System.out.println("JSONDATA2"+sdata);
+        p.setFname((String) o.get("fname"));
+        p.setSname((String) o.get("sname"));
+        p.setTname((String) o.get("tname"));
+         p.setPassportNum("-");
+        p.setPassportSeria((String) o.get("pasport"));
+        p.setAddres((String) o.get("address"));
+        p.setInfo((String) o.get("comment"));
+        p.setPhone((String) o.get("phone"));
+        p.setStage((String) o.get("stage"));
+        p.setOffice((String) o.get("office"));
+        p.setPost((String) o.get("post"));
+        p.setLastUpdate(new Date());
+         System.out.println("JSONDATA3"+p.toString());
+        personalService.getRepository().save(p);
+        return p.getLastUpdate().toString();
     }
-    @RequestMapping(value = "/user/searchContact")
-    public String searchContact() {
-        return "thy/user/searchContact";
+    
+    @RequestMapping(value = "/profile/info/",method=RequestMethod.POST)
+    @ResponseBody
+    public String searchContacts(@RequestParam("userData") String userData) throws JSONException {
+        System.out.println("JSONDATAdd"+userData);
+        personal p = personalService.findByAccessNumber(userData); 
+        System.out.println("JSONDATAtest"+p.getFname());
+        // System.out.println("JSONDATA"+p.toJSON());
+        return p.toString();
     }
 
     @RequestMapping(value = "/public/activation", method = RequestMethod.GET)
@@ -206,6 +259,15 @@ public class UserController {
         log.debug("Exit: activation");
         return "thy/error/error";
 
+    }
+    
+    private String formatNum(String s){
+        if (s.length()<6)
+        {
+            s="0"+s;
+            formatNum(s);
+        }
+        return s;
     }
 
 }

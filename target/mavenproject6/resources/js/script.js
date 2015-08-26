@@ -1,4 +1,4 @@
-var projectPath = "http://94.248.42.4:8080/redQueen";
+var projectPath = "http://localhost:8080/redQueen";
 var autoDiscon = false;
 var lastUpdate = "";
 

@@ -19,7 +19,7 @@ $(document).ready(function() {
 
             newWin.focus();
     });
-    $("form").attr("action","http://94.248.42.4:8080/redQueen/profile/upload?_csrf="+$("#_csrf").val());
+    $("form").attr("action",projectPath + "/profile/upload?_csrf="+$("#_csrf").val());
 });
 function saveProfile() {
     var fname = $("#fname");

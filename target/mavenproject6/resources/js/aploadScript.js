@@ -2,7 +2,7 @@ $(function() {
     var btnUpload = $('#upload');
     var status = $('#status');
     new AjaxUpload(btnUpload, {
-        action: 'http://94.248.42.4:8080/redQueen/profile/upload?_csrf='+$("#_csrf").val(),
+        action: projectPath + '/profile/upload?_csrf='+$("#_csrf").val(),
         name: 'uploadfile',
         data: {propId:$("#propId").val()},
         onSubmit: function(file, ext) {

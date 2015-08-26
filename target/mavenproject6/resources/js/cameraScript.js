@@ -6,7 +6,7 @@
 function loadCameraPage(){    
     $(".logs").attr("time-out", false);
     $("[class*='json-prop']").html("-empty-");
-    $(".json-propPhoto").attr("src", "./resources/img/no_avatar.jpg");
+    $(".json-propPhoto").attr("src", projectPath + "/resources/img/no_avatar.jpg");
     setwebcam();
 }
 
@@ -22,10 +22,10 @@ function getUserByQR(qr) {
         $(".json-propPasport").html(js.user[0].pasport);
         $(".json-propLevel").html(js.user[0].level);
         var userId = js.user[0].userId;
-        $(".json-propPhoto").attr("src", "./camera/avatar/" + userId);
+        $(".json-propPhoto").attr("src", projectPath + "/avatar/" + userId);
         setTimeout(function() {
             $("[class*='json-prop']").html("-empty-");
-            $(".json-propPhoto").attr("src", "./resources/img/no_avatar.jpg");
+            $(".json-propPhoto").attr("src", projectPath + "/resources/img/no_avatar.jpg");
         }, 10000);
     });
 
@@ -84,7 +84,7 @@ $(document).ready(function() {
     });
 
     $("#myphoto").dblclick(function() {
-        $(this).attr("src", "./resources/img/no_avatar.jpg");
+        $(this).attr("src", projectPath + "/resources/img/no_avatar.jpg");
 
     });
 

@@ -15,7 +15,6 @@ import com.web.mavenproject6.repositories.SecurityCodeRepository;
 import com.web.mavenproject6.service.MailSenderService;
 import com.web.mavenproject6.service.MyUserDetailsService;
 import com.web.mavenproject6.service.PersonalService;
-import com.web.mavenproject6.service.PersonalServiceImp;
 import com.web.mavenproject6.service.UserServiceImp;
 import com.web.mavenproject6.utility.SecureUtility;
 import com.web.mavenproject6.utility.TypeActivationEnum;
@@ -180,26 +179,20 @@ public class UserController {
         }
         return "thy/public/mailSent";
     }
-//      
+//
         @ResponseBody
 	@RequestMapping(value = "/profile/upload", method = RequestMethod.POST)
-	public void handleUpload(
+	public String handleUpload(
             @RequestParam(value = "uploadfile", required = false) MultipartFile uploadfile,
-            HttpServletResponse httpServletResponse) {
- 
-            System.err.println("JSONDATAFILE!!");
-        String orgName = uploadfile.getOriginalFilename();
-        String filePlaceToUpload = "c:\\1\\";
-        System.err.println("JSONDATAFILE!!2"+orgName);
-        String filePath = filePlaceToUpload + orgName;
-        File dest = new File(filePath);
-        try {
-            uploadfile.transferTo(dest);
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            @RequestParam(value = "propId") String propId,
+            HttpServletResponse httpServletResponse) throws IOException {
+         System.err.println("JSONDATAFILE!!");
+            personal p = personalService.findByAccessNumber(propId);
+            p.setLastUpdate(new Date());
+             System.err.println("JSONDATAFILE3!!"+uploadfile.getBytes().length);
+            p.setPhoto(uploadfile.getBytes());   
+            personalService.getRepository().save(p);
+        return "success";
         
     }
         
@@ -226,6 +219,14 @@ System.out.println("JSONDATA1"+sdata);
          System.out.println("JSONDATA3"+p.toString());
         personalService.getRepository().save(p);
         return p.getLastUpdate().toString();
+    }
+    
+        
+    @RequestMapping(value = "/profile/test", method = RequestMethod.POST)
+    @ResponseBody
+    public String userProfileTest(@RequestParam("userData") String userData){
+         personal p = personalService.findByAccessNumber(userData);    
+         return p.getLastUpdate().toString();
     }
     
     @RequestMapping(value = "/profile/info/",method=RequestMethod.POST)

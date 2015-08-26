@@ -9,7 +9,9 @@ package com.web.mavenproject6.controller;
  *
  * @author Aleks
  */
+import com.web.mavenproject6.entities.personal;
 import com.web.mavenproject6.forms.UserForm;
+import com.web.mavenproject6.service.PersonalService;
 import com.web.mavenproject6.utility.EncryptionUtil;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -19,7 +21,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
+import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -51,6 +55,9 @@ private  Logger log;
     @Autowired
     private ReCaptchaImpl reCaptcha;
 
+      @Autowired
+    PersonalService personalService;
+      
     @Autowired
     EncryptionUtil encryptionUtil;
 
@@ -110,24 +117,29 @@ private  Logger log;
     public ModelAndView getProfile(@PathVariable("userId") String userId) {
 
         ModelAndView model = new ModelAndView("thy/personal/skiper");
- 
-        model.addObject("propNumber", "0000001");
+        personal p = personalService.findByAccessNumber(userId);
+         
+        model.addObject("propNumber", p.getAccessNumber());
         model.addObject("propStart", "24.05.2015");
         model.addObject("propEnd", "24.05.2016");
-        model.addObject("propTname", "Савинков");
-        model.addObject("propFname", "Никита");
-        model.addObject("propSname", "Алексеевич");
-        model.addObject("propDocument", "ВН456223");
-        model.addObject("propLevel", "20");
+        model.addObject("propTname", p.getTname());
+        model.addObject("propFname", p.getFname());
+        model.addObject("propSname", p.getSname());
+        model.addObject("propDocument", p.getPassportNum()+p.getPassportSeria());
+        model.addObject("propLevel", p.getStage());
         return model;
 
     }
     
-    @RequestMapping(value = "/avatar/{userId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/avatar/{propId}", method = RequestMethod.GET)
     public @ResponseBody
-    BufferedImage getFile(@PathVariable Long userId) throws IOException {
-        System.out.println("IMGDATA!"+userId);
-        BufferedImage img = ImageIO.read(new File("c:\\1\\Desert.jpg"));
+    BufferedImage getFile(@PathVariable String propId) throws IOException {
+        System.out.println("IMGDATA!"+propId);
+            personal p = personalService.findByAccessNumber(propId);
+        byte[] imageInByte;
+         imageInByte = p.getPhoto();
+       InputStream in = new ByteArrayInputStream(imageInByte);
+			BufferedImage img = ImageIO.read(in);
          System.out.println("IMGDATA!loaded");
          
         return img;
@@ -135,11 +147,15 @@ private  Logger log;
     
     @RequestMapping(value = "/qr/{userId}", method = RequestMethod.GET)
     public @ResponseBody
-    BufferedImage getQRCode(@PathVariable String userId) throws IOException {
+    BufferedImage getQRCode(@PathVariable String userId) throws IOException, GeneralSecurityException {
         System.out.println("IMGDATA!"+userId);
         
-         ByteArrayOutputStream out = QRCode.from(userId)
+        
+        personal p = personalService.findByAccessNumber(userId);
+        String userDate = p.getAccessNumber()+" "+p.getFname()+" "+p.getTname();
+        ByteArrayOutputStream out = QRCode.from(Base64.getEncoder().encodeToString(userDate.getBytes()))
                                         .to(ImageType.JPG).stream();
+        
          byte[] imageInByte;
          imageInByte = out.toByteArray();
        InputStream in = new ByteArrayInputStream(imageInByte);
@@ -155,10 +171,11 @@ private  Logger log;
     String getPersonalName(@RequestParam("personalName") String personalName) {
         JSONArray ar = new JSONArray();
 
-        for (int i = 0; i < 10; i++) {
-            String a = "array" + i;
+       List<personal> pList = personalService.getAll();
+        for (personal p:pList) {
+            String a = p.getAccessNumber()+" "+p.getFname()+" "+p.getSname()+" "+p.getTname();
             if (a.contains(personalName)) {
-                ar.add(a);
+                ar.add(p.getFname()+" "+p.getSname()+" "+p.getTname());
             }
         }
         return ar.toString();

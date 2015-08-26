@@ -11,8 +11,11 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.annotation.MultipartConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
+import org.springframework.boot.context.embedded.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -60,6 +63,7 @@ import org.thymeleaf.templateresolver.TemplateResolver;
 @EnableWebMvc
 @Import({AppSecurityConfig.class})
 @EnableScheduling
+
 public class MvcConfiguration extends WebMvcConfigurerAdapter implements SchedulingConfigurer {
 
     @Value("${mail.subject}")
@@ -106,17 +110,25 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter implements Schedul
 //                <bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"/>
         
         ByteArrayHttpMessageConverter byteArray = new ByteArrayHttpMessageConverter();
-        byteArray.setSupportedMediaTypes(Arrays.asList(MediaType.IMAGE_JPEG,MediaType.IMAGE_PNG,MediaType.APPLICATION_OCTET_STREAM,MediaType.MULTIPART_FORM_DATA,MediaType.ALL));
+        byteArray.setSupportedMediaTypes(Arrays.asList(MediaType.IMAGE_JPEG,MediaType.IMAGE_PNG,MediaType.APPLICATION_OCTET_STREAM,MediaType.MULTIPART_FORM_DATA));
         converters.add(byteArray);
     }
     
     
-//    @Bean
-//    public CommonsMultipartResolver multipartResolver(){
-//        CommonsMultipartResolver r = new CommonsMultipartResolver();
-//        r.setMaxUploadSize(1024000000);
-//        return r;
-//    }
+    @Bean
+    public CommonsMultipartResolver multipartResolver(){
+        CommonsMultipartResolver r = new CommonsMultipartResolver();
+        r.setMaxUploadSize(1024000000);
+        return r;
+    }
+    
+    @Bean
+    public MultipartConfigElement multipartConfigElement() {
+        MultipartConfigFactory factory = new MultipartConfigFactory();
+        factory.setMaxFileSize("128KB");
+        factory.setMaxRequestSize("128KB");
+        return factory.createMultipartConfig();
+    }
 
     @Bean
     public TemplateResolver templateResolver() {

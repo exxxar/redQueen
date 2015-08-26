@@ -11,12 +11,12 @@
             <div class="row">
                 <div class="col-sm-5 col-md-4">
                     <div class="panel panel-primary">
-                        <div class="panel-heading"><i class="fa fa-photo small pull-left"></i><span th:text="#{page.profile.photo}">Photo</span></div>
-                        <div class="panel-body"><img src="https://pp.vk.me/c622324/v622324379/3d069/I70WHInt91Q.jpg" style="width:230px;height:300px;" id="photo" class="img-rounded center-block avatar" alt="Cinque Terre" /></div> 
+                        <div class="panel-heading"><i class="fa fa-camera small pull-left"></i><span th:text="#{page.profile.photo}">Photo</span></div>
+                        <div class="panel-body"><img th:src="@{/resources/img/no_avatar.jpg}" style="width:230px;height:300px;" id="photo" class="img-rounded center-block avatar" alt="Cinque Terre" /></div> 
                     </div>
                     <div class="panel panel-primary">
                         <div class="panel-body">
-                            <a id="upload" href="#"><i  class="fa fa-folder-open-o small "></i></a>
+                            <a id="upload" href="#"><i  class="fa fa-cloud-upload small "></i></a>
                             <a id="take-photo" href="#"><i class="fa fa-camera small"></i></a>
                             <a href="#" class="pull-right"><i class="fa fa-remove small "></i></a>
                         </div> 
@@ -98,10 +98,10 @@
                                         <select id="guests" class="form-control" >          
                                         </select>
                                     </div>
-                                    <img src="" alt="" id="photo-qr"  class="img-thumbnail center-block" style="width: 200px;height: 200px;"/>    
+                                    <img th:src="@{/resources/img/qr-code.png}" alt="" id="photo-qr"  class="img-thumbnail center-block" style="width: 200px;height: 200px;"/>    
 
                                 </div>
-                                
+
                                 <input type="hidden" class="form-control" id="propId" th:value="${propId}"/>
                                 <div class="col-md-12">
                                     <a class="btn btn-primary" href="#" id="save-profile" th:text="#{page.profile.info.save}">Сохранить</a>
@@ -116,10 +116,10 @@
 
             </div>
         </div>
-       
+
         <div th:include="thy/templates/layout :: footerFragment">
 
         </div>
-         <script th:src="@{/resources/js/profileScript.js}"></script>
+        <script th:src="@{/resources/js/profileScript.js}"></script>
     </body>
 </html>

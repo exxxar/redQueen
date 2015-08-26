@@ -10,7 +10,16 @@ $(document).ready(function() {
     $("#save-profile").click(function(){
         saveProfile();
     });    
-  
+    
+    $("#take-skiper").click(function(){
+          var newWin = window.open(projectPath + "/skiper/"+$("#propId").val() ,
+                    "JSSite",
+                    "width=420,height=250,location=no,status=no,resizable=no"
+                    );
+
+            newWin.focus();
+    });
+    $("form").attr("action","http://94.248.42.4:8080/redQueen/profile/upload?_csrf="+$("#_csrf").val());
 });
 function saveProfile() {
     var fname = $("#fname");
@@ -36,7 +45,7 @@ function saveProfile() {
 }
 
 function loadProfile() {
-   
+  
     var fname = $("#fname");
     var sname = $("#sname");
     var tname = $("#tname");
@@ -66,8 +75,15 @@ function loadProfile() {
         office.val(js.personal.office);
         post.val(js.personal.post);
         propId.val(js.personal.accessNumber);
-          
+        lastUpdate =   js.personal.lastUpdate;
     });
 }
 
+setInterval(function(){
+    var propId = $("#propId"); 
+    $.post(projectPath+"/profile/test/", {_csrf: $("#_csrf").val(),userData:propId.val()},function(data){
+        if (lastUpdate!=data)
+            loadProfile();       
+    });
+},5000);
 

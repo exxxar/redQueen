@@ -96,7 +96,7 @@ $(document).ready(function() {
             }, response);
         },
         select: function(event, ui) {
-            var newWin = window.open(projectPath + "/profile/" + ui.item.value,
+            var newWin = window.open(projectPath + "/skiper/" + ui.item.value,
                     "JSSite",
                     "width=420,height=250,location=no,status=no,resizable=no"
                     );
@@ -116,7 +116,7 @@ $(document).ready(function() {
             }, response);
         },
         select: function(event, ui) {
-            var newWin = window.open(projectPath + "/camera/profile/" + ui.item.value,
+            var newWin = window.open(projectPath + "/skiper/" + ui.item.value,
                     "JSSite",
                     "width=420,height=250,location=no,status=no,resizable=no"
                     );

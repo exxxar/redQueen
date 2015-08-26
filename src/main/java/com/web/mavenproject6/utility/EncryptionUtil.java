@@ -7,6 +7,7 @@ package com.web.mavenproject6.utility;
 
 import com.sun.javafx.scene.layout.region.Margins.Converter;
 import java.security.GeneralSecurityException;
+import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
@@ -31,7 +32,7 @@ public class EncryptionUtil {
     @Autowired
     public EncryptionUtil(Environment env) {
         this.env = env;
-        String key = this.env.getProperty("aes.key");
+        String key = Base64.getEncoder().encodeToString(this.env.getProperty("aes.key").getBytes());
         this.skeySpec = new SecretKeySpec(key.getBytes(), "AES");
     }
 

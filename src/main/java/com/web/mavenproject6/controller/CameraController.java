@@ -9,8 +9,10 @@ package com.web.mavenproject6.controller;
  *
  * @author Aleks
  */
+import com.web.mavenproject6.entities.guest;
 import com.web.mavenproject6.entities.personal;
 import com.web.mavenproject6.forms.UserForm;
+import com.web.mavenproject6.service.GuestService;
 import com.web.mavenproject6.service.PersonalService;
 import com.web.mavenproject6.utility.EncryptionUtil;
 import java.awt.image.BufferedImage;
@@ -22,6 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -67,10 +70,15 @@ public class CameraController {
     PersonalService personalService;
 
     @Autowired
+    GuestService guestService;
+
+    @Autowired
     EncryptionUtil encryptionUtil;
 
     @Autowired
     ServletContext servletContext;
+    
+    private List<JSONObject> simpleLog = new ArrayList<>();
 
     @RequestMapping(value = {"/camera"}, method = RequestMethod.GET)
     public String defaultPage(Model model, Locale locale) throws ArithmeticException {
@@ -108,6 +116,7 @@ public class CameraController {
         JSONObject resultJson = new JSONObject();
         JSONObject obj = new JSONObject();
 
+        
         obj.put("propNumber", "0000001");
         obj.put("propDate", (new Date()).toString());
         obj.put("fname", "Василий");
@@ -116,9 +125,10 @@ public class CameraController {
         obj.put("pasport", "ВК898999");//
         obj.put("level", "10");
         obj.put("userId", "10");
-        ar.add(obj);
-
+        ar.add(obj); 
         resultJson.put("user", ar);
+        
+        simpleLog.add(obj);
         return resultJson.toString();
     }
 
@@ -131,8 +141,8 @@ public class CameraController {
 
             personal p = (personal) pObject;
             model.addObject("propId", p.getAccessNumber());
-            model.addObject("propStart", "24.05.2015");
-            model.addObject("propEnd", "24.05.2016");
+            model.addObject("propStart", p.getBegin());
+            model.addObject("propEnd", p.getEnd());
             model.addObject("propTname", p.getTname());
             model.addObject("propFname", p.getFname());
             model.addObject("propSname", p.getSname());
@@ -140,6 +150,22 @@ public class CameraController {
             model.addObject("propLevel", p.getStage());
 
         }
+        
+        Object gObject = guestService.findByAccessNumber(userId);
+        if (gObject instanceof guest) {
+
+            guest g = (guest) gObject;
+            model.addObject("propId", g.getAccessNumber());
+            model.addObject("propStart", g.getBegin());
+            model.addObject("propEnd", g.getEnd());
+            model.addObject("propTname", g.getTname());
+            model.addObject("propFname", g.getFname());
+            model.addObject("propSname", g.getSname());
+            model.addObject("propDocument", g.getPassportNum() + g.getPassportSeria());
+            model.addObject("propLevel", "GUEST");
+
+        }
+        
         return model;
     }
 
@@ -148,10 +174,11 @@ public class CameraController {
     BufferedImage getFile(@PathVariable String propId) throws IOException {
 
         BufferedImage img;
+        byte[] imageInByte;
 
         Object pObject = personalService.findByAccessNumber(propId);
         if (pObject instanceof personal) {
-            byte[] imageInByte;
+
             imageInByte = ((personal) pObject).getPhoto();
             if (imageInByte.length > 1) {
                 InputStream in = new ByteArrayInputStream(imageInByte);
@@ -162,11 +189,24 @@ public class CameraController {
                 img = ImageIO.read(in);
             }
             return img;
-        } else {
-            InputStream in = servletContext.getResourceAsStream("/resources/img/no_avatar.jpg");
-            img = ImageIO.read(in);
+        }
+
+        Object gObject = guestService.findByAccessNumber(propId);
+        if (gObject instanceof guest) {
+            imageInByte = ((guest) gObject).getPhoto();
+            if (imageInByte.length > 1) {
+                InputStream in = new ByteArrayInputStream(imageInByte);
+                img = ImageIO.read(in);
+            } else {
+                InputStream in = servletContext.getResourceAsStream("/resources/img/no_avatar.jpg");
+                img = ImageIO.read(in);
+            }
             return img;
         }
+
+        InputStream in = servletContext.getResourceAsStream("/resources/img/no_avatar.jpg");
+        img = ImageIO.read(in);
+        return img;
 
     }
 
@@ -181,9 +221,17 @@ public class CameraController {
             personalService.getRepository().save(p);
         }
 
+        Object gObject = guestService.findByAccessNumber(propId);
+        if (gObject instanceof guest) {
+            guest g = (guest) gObject;
+            g.setPhoto(new byte[1]);
+            g.getPersonal_guest().setLastUpdate(new Date());
+            guestService.getRepository().save(g);
+        }
+
     }
 
-    @RequestMapping(value = "/qr/{userId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/qr/{userId}/", method = RequestMethod.GET)
     public @ResponseBody
     BufferedImage getQRCode(@PathVariable String userId) throws IOException, GeneralSecurityException {
         BufferedImage img;
@@ -200,25 +248,66 @@ public class CameraController {
             InputStream in = new ByteArrayInputStream(imageInByte);
             img = ImageIO.read(in);
             return img;
-        } else {
+        }
 
-            InputStream in = servletContext.getResourceAsStream("/resources/img/qr-code.jpg");
+        Object gObject = guestService.findByAccessNumber(userId);
+        if (gObject instanceof guest) {
+            guest g = (guest) gObject;
+            String userDate = g.getAccessNumber() + " " + g.getFname() + " " + g.getTname();
+            ByteArrayOutputStream out = QRCode.from(Base64.getEncoder()
+                    .encodeToString(userDate.getBytes()))
+                    .to(ImageType.JPG).stream();
+            byte[] imageInByte;
+            imageInByte = out.toByteArray();
+            InputStream in = new ByteArrayInputStream(imageInByte);
             img = ImageIO.read(in);
             return img;
         }
 
+        InputStream in = servletContext.getResourceAsStream("/resources/img/qr-code.jpg");
+        img = ImageIO.read(in);
+        return img;
+
     }
 
-    @RequestMapping(value = "/camera/plist", method = RequestMethod.GET)
+    @ResponseBody
+    @RequestMapping(value = "/guest/list/{propId}", method = RequestMethod.GET)
+    public String guestList(@PathVariable String propId, Model model) throws JSONException {
+        JSONArray ar = new JSONArray();
+        JSONObject resultJson = new JSONObject();
+
+        Object pObject = (personal) personalService.findByAccessNumber(propId);
+        if (pObject instanceof personal) {
+
+            personal p = (personal) pObject;
+            resultJson.put("size", p.getGuests().size());
+            for (guest g : p.getGuests()) {
+
+                JSONObject obj = new JSONObject();
+                obj.put("guestId", g.getId());
+                obj.put("fname", g.getFname());
+                obj.put("sname", g.getSname());
+                obj.put("tname", g.getTname());
+                obj.put("passport", g.getPassportSeria() + " " + g.getPassportNum());
+                ar.add(obj);
+            }
+        } else {
+            resultJson.put("size", "0");
+        }
+        resultJson.put("guests", ar);
+        return resultJson.toString();
+    }
+
+    @RequestMapping(value = "/plist", method = RequestMethod.GET)
     public @ResponseBody
     String getPersonalName(@RequestParam("personalName") String personalName) {
         JSONArray ar = new JSONArray();
-
+        
         List<personal> pList = personalService.getAll();
         for (personal p : pList) {
             String a = p.getAccessNumber() + " " + p.getFname() + " " + p.getSname() + " " + p.getTname();
             if (a.contains(personalName)) {
-                ar.add(p.getFname() + " " + p.getSname() + " " + p.getTname());
+                ar.add(p.toString());
             }
         }
         return ar.toString();
@@ -226,17 +315,12 @@ public class CameraController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/camera/logs", method = RequestMethod.POST)
+    @RequestMapping(value = "/logs", method = RequestMethod.POST)
     public String cameraLogs() throws JSONException {
         JSONArray ar = new JSONArray();
         JSONObject resultJson = new JSONObject();
-        for (int i = 0; i < 100; i++) {
-            JSONObject obj = new JSONObject();
-            obj.put("Time", (new Date()).toString());
-            obj.put("Message", i % 2 == 0 ? "Acepted" : "Denied");
-            obj.put("User", "Vasya" + i);
-            obj.put("Type", i % 2 == 0 ? "error" : "success");//
-            ar.add(obj);
+        for (JSONObject j:simpleLog) {            
+            ar.add(j);
         }
         resultJson.put("logs", ar);
         return resultJson.toString();
@@ -246,26 +330,7 @@ public class CameraController {
     @ResponseBody
     @RequestMapping(value = "/ping", method = RequestMethod.POST)
     public String pingPong() throws JSONException {
-        return "1";
-    }
-
-    @ResponseBody
-    @RequestMapping(value = "/camera/guest", method = RequestMethod.GET)
-    public String addGuest(Model model) throws JSONException {
-        JSONArray ar = new JSONArray();
-
-        JSONObject resultJson = new JSONObject();
-
-        for (int i = 0; i < 20; i++) {
-            JSONObject obj = new JSONObject();
-            obj.put("time", (new Date()).toString());
-            obj.put("message", "error message created for test");
-            obj.put("user", "Vasya" + i);
-            ar.add(obj);
-        }
-
-        resultJson.put("logs", ar);
-        return resultJson.toString();
+        return "pong";
     }
 
 }

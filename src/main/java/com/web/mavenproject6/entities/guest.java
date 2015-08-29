@@ -6,6 +6,7 @@
 package com.web.mavenproject6.entities;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -38,15 +39,23 @@ public class guest implements Serializable {
     private String fname;
     private String sname;
     private String tname;
-   
+
+    private String accessNumber;
+
     @NotNull
     private String passportSeria;
-    
+
     @NotNull
     private String passportNum;
     private boolean state;
     private byte[] photo;
-    
+
+    private Date coming;
+    private Date leaving;
+
+    private Date begin;
+    private Date end;
+
     public personal getPersonal_guest() {
         return personal_guest;
     }
@@ -119,17 +128,66 @@ public class guest implements Serializable {
         this.photo = photo;
     }
 
+    public String getAccessNumber() {
+        return accessNumber;
+    }
+
+    public void setAccessNumber(String accessNumber) {
+        this.accessNumber = accessNumber;
+    }
+
+    public Date getComing() {
+        return coming;
+    }
+
+    public void setComing(Date coming) {
+        this.coming = coming;
+    }
+
+    public Date getLeaving() {
+        return leaving;
+    }
+
+    public void setLeaving(Date leaving) {
+        this.leaving = leaving;
+    }
+
+    public Date getBegin() {
+        return begin;
+    }
+
+    public void setBegin(Date begin) {
+        this.begin = begin;
+    }
+
+    public Date getEnd() {
+        return end;
+    }
+
+    public void setEnd(Date end) {
+        this.end = end;
+    }
+
     public guest() {
-         this.fname = "";
+        this.fname = "";
+        this.accessNumber = "";
         this.sname = "";
         this.tname = "";
         this.passportSeria = "";
         this.passportNum = "";
         this.state = false;
         this.photo = new byte[1];
+        this.coming = new Date();
+        this.leaving = null;
+        this.begin = new Date();
+        this.end = new Date((new Date()).getTime() + 86400000);
     }
 
-    public guest(String fname, String sname, String tname, String passportSeria, String passportNum, boolean state, byte[] photo) {
+    public guest(String accessNumber, String fname, String sname, String tname,
+            String passportSeria, String passportNum, boolean state, byte[] photo,
+            Date coming, Date leaving, Date begin, Date end) {
+
+        this.accessNumber = accessNumber;
         this.fname = fname;
         this.sname = sname;
         this.tname = tname;
@@ -137,21 +195,34 @@ public class guest implements Serializable {
         this.passportNum = passportNum;
         this.state = state;
         this.photo = photo;
+        this.coming = coming;
+        this.leaving = leaving;
+        this.begin = begin;
+        this.end = end;
     }
-  
-    
- public String toJSON() throws JSONException {
+
+    @Override
+    public String toString() {
         JSONObject g = new JSONObject();
+        try {
         g
                 .put("id", id)
+                .put("accessNumber", accessNumber)
                 .put("fname", fname)
                 .put("sname", fname)
                 .put("tname", fname)
                 .put("passportSeria", fname)
                 .put("passportNum", fname)
                 .put("state", fname)
-                .put("photo", photo.length > 1 ? "exist" : "not exist");               
+                .put("begin", begin)
+                .put("end", end)
+                .put("coming", coming)
+                .put("leaving", leaving);
+        }
+        catch(JSONException ee){
+            
+        }
         return g.toString();
-    }    
+    }
 
 }

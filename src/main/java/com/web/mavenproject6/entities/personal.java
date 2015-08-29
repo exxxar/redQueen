@@ -6,6 +6,7 @@
 package com.web.mavenproject6.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -71,6 +72,12 @@ public class personal implements Serializable {
 
     private Date lastUpdate;
 
+    private Date coming;
+    private Date leaving;
+
+    private Date begin;
+    private Date end;
+
     @Length(max = 255)
     private String info;
 
@@ -79,6 +86,10 @@ public class personal implements Serializable {
 
     public List<guest> getGuests() {
         return guests;
+    }
+
+    public void addGuest(guest g) {
+        guests.add(g);
     }
 
     public void setGuests(List<guest> guests) {
@@ -221,6 +232,38 @@ public class personal implements Serializable {
         this.lastUpdate = lastUpdate;
     }
 
+    public Date getComing() {
+        return coming;
+    }
+
+    public void setComing(Date coming) {
+        this.coming = coming;
+    }
+
+    public Date getLeaving() {
+        return leaving;
+    }
+
+    public void setLeaving(Date leaving) {
+        this.leaving = leaving;
+    }
+
+    public Date getBegin() {
+        return begin;
+    }
+
+    public void setBegin(Date begin) {
+        this.begin = begin;
+    }
+
+    public Date getEnd() {
+        return end;
+    }
+
+    public void setEnd(Date end) {
+        this.end = end;
+    }
+
     public personal() {
         this.accessNumber = "";
         this.tname = "";
@@ -237,10 +280,17 @@ public class personal implements Serializable {
         this.isActive = false;
         this.info = "";
         this.user = null;
+        this.guests = new ArrayList<>();
         this.lastUpdate = new Date();
+        this.coming = new Date();
+        this.leaving = null;
+        this.begin = new Date();
+        this.end = new Date((new Date()).getTime() + 31536000000l);
     }
 
-    public personal(String accessNumber, String tname, String sname, String fname, String phone, String addres, String post, String office, String stage, String passportSeria, String passportNum, byte[] photo, boolean isActive, String info, Users user) {
+    public personal(String accessNumber, String tname, String sname, String fname, String phone, String addres, String post, String office, String stage,
+            String passportSeria, String passportNum, byte[] photo, boolean isActive, String info, Users user,
+            Date coming, Date leaving, Date begin, Date end) {
         this.accessNumber = accessNumber;
         this.tname = tname;
         this.sname = sname;
@@ -256,33 +306,41 @@ public class personal implements Serializable {
         this.isActive = isActive;
         this.info = info;
         this.user = user;
+        this.guests = new ArrayList<>();
         this.lastUpdate = new Date();
+        this.coming = coming;
+        this.leaving = leaving;
+        this.begin = begin;
+        this.end = end;
     }
-    
-  
+
     @Override
-    public String toString(){
+    public String toString() {
         JSONObject person = new JSONObject();
-        try {       
-        person
-                .put("personal_id", personal_id)
-                .put("accessNumber", accessNumber)
-                .put("fname", fname)
-                .put("fname", fname)
-                .put("sname", sname)
-                .put("tname", tname)
-                .put("phone", phone)
-                .put("addres", addres)
-                .put("post", post)
-                .put("office", office)
-                .put("stage", stage)
-                .put("passportSeria", passportSeria)
-                .put("passportNum", passportNum)
-                //.put("photo", photo.length > 1 ? "exist" : "not exist")
-                .put("isActive", isActive)
-                .put("info", info)
-                //.put("user", user.toJSON())
-                .put("lastUpdate", lastUpdate);
+        try {
+            person
+                    .put("personal_id", personal_id)
+                    .put("accessNumber", accessNumber)
+                    .put("fname", fname)
+                    .put("fname", fname)
+                    .put("sname", sname)
+                    .put("tname", tname)
+                    .put("phone", phone)
+                    .put("addres", addres)
+                    .put("post", post)
+                    .put("office", office)
+                    .put("stage", stage)
+                    .put("passportSeria", passportSeria)
+                    .put("passportNum", passportNum)
+                    //.put("photo", photo.length > 1 ? "exist" : "not exist")
+                    .put("isActive", isActive)
+                    .put("info", info)
+                    //.put("user", user.toJSON())
+                    .put("lastUpdate", lastUpdate)
+                    .put("begin",begin)
+                    .put("end", end)
+                    .put("coming",coming)
+                    .put("leaving", leaving);
 //
 //        if (getGuests() != null) {
 //            JSONArray ar = new JSONArray();
@@ -291,10 +349,9 @@ public class personal implements Serializable {
 //            }
 //            person.put("guests", ar);
 //        }
-          return (new JSONObject()).put("personal", person).toString();
-        }
-        catch(Exception e){
-            
+            return (new JSONObject()).put("personal", person).toString();
+        } catch (JSONException e) {
+
         }
         return "";
     }

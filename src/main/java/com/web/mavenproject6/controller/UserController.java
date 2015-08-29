@@ -8,10 +8,12 @@ package com.web.mavenproject6.controller;
 import com.web.mavenproject6.entities.Role;
 import com.web.mavenproject6.entities.SecurityCode;
 import com.web.mavenproject6.entities.Users;
+import com.web.mavenproject6.entities.guest;
 import com.web.mavenproject6.entities.personal;
 import com.web.mavenproject6.forms.UserForm;
 import com.web.mavenproject6.other.UserSessionComponent;
 import com.web.mavenproject6.repositories.SecurityCodeRepository;
+import com.web.mavenproject6.service.GuestService;
 import com.web.mavenproject6.service.MailSenderService;
 import com.web.mavenproject6.service.MyUserDetailsService;
 import com.web.mavenproject6.service.PersonalService;
@@ -48,6 +50,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -73,6 +76,9 @@ public class UserController {
 
     @Autowired
     PersonalService personalService;
+
+    @Autowired
+    GuestService guestService;
 
     @Autowired
     SecurityCodeRepository securityCodeRepository;
@@ -166,14 +172,14 @@ public class UserController {
             person.setPhoto(new byte[1]);
             user.setPerson(person);
             userService.save(user);
-            
+
             /* for generate accessNumber by userId */
             user = userService.getRepository().findUserByEmail(user.getEmail());
             person = user.getPerson();
-            person.setAccessNumber(formatNum(""+user.getId()));
+            person.setAccessNumber(formatNum("" + user.getId()));
             user.setPerson(person);
             userService.save(user);
-            
+
             securityCodeRepository.save(securityCode);
             mailSenderService.sendAuthorizationMail(user, user.getSecurityCode());
 
@@ -193,32 +199,39 @@ public class UserController {
             @RequestParam(value = "propId") String propId,
             HttpServletResponse httpServletResponse) throws IOException {
 
-        Object p = personalService.findByAccessNumber(propId);
-        if (p instanceof personal) {
-            personal person = (personal)p;
+        Object pObject = personalService.findByAccessNumber(propId);
+        if (pObject instanceof personal) {
+            personal person = (personal) pObject;
             person.setLastUpdate(new Date());
             person.setPhoto(uploadfile.getBytes());
             personalService.getRepository().save(person);
             return "success";
         }
-        
-        if (p instanceof Boolean)
-            return "failed";
-        
+
+        Object gObject = guestService.findByAccessNumber(propId);
+        if (gObject instanceof guest) {
+            guest g = (guest) gObject;
+            g.getPersonal_guest().setLastUpdate(new Date());
+            g.setPhoto(uploadfile.getBytes());
+            guestService.getRepository().save(g);
+            return "success";
+        }
+
         return "failed";
     }
 
     @RequestMapping(value = "/profile/update", method = RequestMethod.POST)
     @ResponseBody
     public String userProfileUpdate(@RequestParam("sdata") String sdata) throws JSONException {
-    
-        if (StringUtils.isEmpty(sdata))
+
+        if (StringUtils.isEmpty(sdata)) {
             return (new Date()).toString();
-        
+        }
+
         JSONObject o = new JSONObject(sdata);
         Object pObject = personalService.findByAccessNumber((String) o.get("propId"));
         if (pObject instanceof personal) {
-            personal p = (personal)pObject;
+            personal p = (personal) pObject;
             p.setFname((String) o.get("fname"));
             p.setSname((String) o.get("sname"));
             p.setTname((String) o.get("tname"));
@@ -234,28 +247,74 @@ public class UserController {
             personalService.getRepository().save(p);
             return p.getLastUpdate().toString();
         }
+
+        Object gObject = guestService.findByAccessNumber((String) o.get("propId"));
+        if (gObject instanceof guest) {
+            guest g = (guest) gObject;
+            g.setFname((String) o.get("fname"));
+            g.setSname((String) o.get("sname"));
+            g.setTname((String) o.get("tname"));
+            g.setPassportNum("-");
+            g.setPassportSeria((String) o.get("pasport"));
+            g.getPersonal_guest().setLastUpdate(new Date());
+            guestService.getRepository().save(g);
+            return g.getPersonal_guest().getLastUpdate().toString();
+        }
         return (new Date()).toString();
+    }
+
+    @RequestMapping(value = "/guest/add/{propId}", method = RequestMethod.POST)
+    @ResponseBody
+    public String addGuest(@PathVariable("propId") String userId, @RequestParam("sdata") String sdata) throws JSONException {
+
+        if (StringUtils.isEmpty(sdata)) {
+            return (new Date()).toString();
+        }
+
+        JSONObject o = new JSONObject(sdata);
+        Object pObject = personalService.findByAccessNumber((String) o.get("propId"));
+
+        guest g = new guest();
+        g.setFname((String) o.get("fname"));
+        g.setSname((String) o.get("sname"));
+        g.setTname((String) o.get("tname"));
+        g.setPassportNum("-");
+        g.setPassportSeria((String) o.get("pasport"));
+        g.setPersonal_guest((personal) pObject);
+        ((personal) pObject).addGuest(g);
+        ((personal) pObject).setLastUpdate(new Date());
+        personalService.getRepository().save(((personal) pObject));
+        guestService.getRepository().save(g);
+
+        g = (guest) guestService.findByFST(g.getFname(), g.getSname(), g.getTname());
+        g.setAccessNumber("g" + formatNum("" + g.getId()));
+        guestService.getRepository().save(g);
+
+        
+        return g.getPersonal_guest().getLastUpdate().toString();
+
     }
 
     @RequestMapping(value = "/profile/test", method = RequestMethod.POST)
     @ResponseBody
     public String userProfileTest(@RequestParam("userData") String propId) {
         Object pObject = personalService.findByAccessNumber(propId);
-        if (pObject instanceof personal)
-            return ((personal)pObject).getLastUpdate().toString();
+        if (pObject instanceof personal) {
+            return ((personal) pObject).getLastUpdate().toString();
+        }
         return (new Date()).toString();
     }
 
     @RequestMapping(value = "/profile/info/", method = RequestMethod.POST)
     @ResponseBody
     public String searchContacts(@RequestParam("userData") String userData) throws JSONException {
-        Object pObject = personalService.findByAccessNumber(userData);       
-        return ((personal)pObject).toString();
+        Object pObject = personalService.findByAccessNumber(userData);
+        return ((personal) pObject).toString();
     }
 
     @RequestMapping(value = "/public/activation", method = RequestMethod.GET)
     @Transactional
-    public String activation(@RequestParam String mail, @RequestParam String code, Model model) {        
+    public String activation(@RequestParam String mail, @RequestParam String code, Model model) {
         log.debug("Enter: activation");
         if (userService.findUserBySecurityCode(mail, code) != null) {
             Users user = userService.getRepository().findUserByEmail(mail);
@@ -279,7 +338,7 @@ public class UserController {
     private String formatNum(String s) {
         if (s.length() < 6) {
             s = "0" + s;
-            System.out.println("recursiya:"+s);
+            System.out.println("recursiya:" + s);
             s = formatNum(s);
         }
         return s;

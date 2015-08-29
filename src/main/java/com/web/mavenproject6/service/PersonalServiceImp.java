@@ -64,4 +64,6 @@ public class PersonalServiceImp implements PersonalService {
         return (List<personal>) personalRepository.findAll();
     }
 
+   
+
 }

@@ -70,15 +70,15 @@
 
     </style>
 
-    <body onload=" loadProfile();">
+    <body>
         <div class="wrapper">
             <div class="card">
                 <h1>Донецкая народная республика</h1>
                 <h1>Министерство связи</h1>
                 <div class="item">
-                    <img class="propQr" th:src="@{/resources/img/qr-code.png}"/>
+                    <img class="propQr" th:src="@{/resources/img/qr-code.jpg}"/>
                     <p>№ пропуска</p>
-                    <p class="propNumber"><i th:text="${propNumber}">0000001</i></p>
+                    <p class="propNumber"><i th:text="${propId}">0000001</i></p>
                     <p class="propStart" th:text="${propStart}">от 24.05.2015</p>
                     <p class="propEnd" th:text="${propEnd}">до 24.05.2016</p>
                 </div>
@@ -101,6 +101,7 @@
         </div>
         <script th:src="@{/resources/js/script.js}"></script>
         <script th:src="@{/resources/js/skiperScript.js}"></script>
+        <input type="hidden" class="form-control" id="propId" th:value="${propId}"/>
         <input type="hidden" id="_csrf" th:name="_csrf" th:value="${_csrf.token}"/>
     </body>
 </html>

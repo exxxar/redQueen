@@ -5,6 +5,7 @@
  */
 package com.web.mavenproject6.controller;
 
+import com.web.mavenproject6.entities.Users;
 import com.web.mavenproject6.other.UserSessionComponent;
 import com.web.mavenproject6.service.UserServiceImp;
 import org.apache.log4j.Logger;
@@ -58,8 +59,17 @@ public class MainController {
         }
         if (isSecure)
             return "thy/camera";
+     
+        UserDetails ud = (UserDetails) auth.getPrincipal();
+   
+        Users u = userService.getRepository().findUserByEmail(ud.getUsername());
+        if (u==null)
+            u = userService.getRepository().findUserByLogin(ud.getUsername());
+
+        if (u==null)
+            return "thy/error/404";
         
-        model.addAttribute("propId", "000001");
+        model.addAttribute("propId", u.getPerson().getAccessNumber());
         return "thy/personal/profile";
     }
 

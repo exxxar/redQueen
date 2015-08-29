@@ -6,10 +6,15 @@
 
 
 $(document).ready(function() {
-
+    loadProfile();
+    
     $("#save-profile").click(function(){
         saveProfile();
     });    
+    
+    $("#reset-photo").click(function(){
+         $.get(projectPath+"/avatar/reset/"+$("#propId").val());
+    });
     
     $("#take-skiper").click(function(){
           var newWin = window.open(projectPath + "/skiper/"+$("#propId").val() ,
@@ -85,5 +90,5 @@ setInterval(function(){
         if (lastUpdate!=data)
             loadProfile();       
     });
-},5000);
+},INTERVALE_TEST_UPDATE);
 

@@ -15,15 +15,8 @@ $(function() {
 
             status.text('loading...');
         },
-        onComplete: function(file, response) {
-            //On completion clear the status
-            status.text('');
-            //Add uploaded file to list
-            if (response === "success") {
-                $('<li></li>').appendTo('#files').html('<img src="./uploads/' + file + '" alt="" /><br />' + file).addClass('success');
-            } else {
-                $('<li></li>').appendTo('#files').text('Файл не загружен' + file).addClass('error');
-            }
+        onComplete: function(file, response) {           
+            status.text('');          
         }
     });
 

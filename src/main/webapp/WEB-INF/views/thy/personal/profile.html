@@ -4,7 +4,7 @@
     </head>  
     <script type="text/javascript" src="http://ajaxs.ru/demo/ajax/imageload/js/ajaxupload.3.5.js"></script>
     <script type="text/javascript" th:src="@{/resources/js/aploadScript.js}"></script>
-    <body onload="loadProfile();">
+    <body>
         <div th:include="thy/templates/layout :: menuFragment">
         </div>
         <div class="container">
@@ -16,9 +16,9 @@
                     </div>
                     <div class="panel panel-primary">
                         <div class="panel-body">
-                            <a id="upload" href="#"><i  class="fa fa-cloud-upload small "></i></a>
-                            <a id="take-photo" href="#"><i class="fa fa-camera small"></i></a>
-                            <a href="#" class="pull-right"><i class="fa fa-remove small "></i></a>
+                            <a id="upload" href="#" class="fa fa-cloud-upload small "></a>
+                            <a id="take-photo" href="#" class="fa fa-camera small"></a>
+                            <a id="reset-photo" href="#" class="fa fa-remove small pull-right"></a>
                         </div> 
 
                     </div>
@@ -98,7 +98,7 @@
                                         <select id="guests" class="form-control" >          
                                         </select>
                                     </div>
-                                    <img th:src="@{/resources/img/qr-code.png}" alt="" id="photo-qr"  class="img-thumbnail center-block" style="width: 200px;height: 200px;"/>    
+                                    <img th:src="@{/resources/img/qr-code.jpg}" alt="" id="photo-qr"  class="img-thumbnail center-block" style="width: 200px;height: 200px;"/>    
 
                                 </div>
 

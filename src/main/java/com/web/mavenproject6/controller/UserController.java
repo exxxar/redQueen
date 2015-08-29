@@ -44,6 +44,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -64,14 +65,13 @@ public class UserController {
     @Autowired
     private org.apache.log4j.Logger log;
 
-    
     @Autowired
     Environment env;
-    
+
     @Autowired
     UserServiceImp userService;
-    
-     @Autowired
+
+    @Autowired
     PersonalService personalService;
 
     @Autowired
@@ -88,7 +88,6 @@ public class UserController {
 
     @Autowired
     private ReCaptchaImpl reCaptcha;
-  
 
     private static List<GrantedAuthority> AUTHORITIES = new ArrayList<GrantedAuthority>(1) {
         {
@@ -102,15 +101,15 @@ public class UserController {
 
     @RequestMapping("/public/signup")
     public String create(Model model) {
-       
+
         if (!model.containsAttribute("user")) {
             model.addAttribute("user", new UserForm());
         }
-       
+
         if (reCaptcha != null) {
             model.addAttribute("recaptcha", reCaptcha.createRecaptchaHtml(null, null));
         }
-        
+
         return "thy/public/signup";
     }
 
@@ -122,7 +121,6 @@ public class UserController {
             @RequestParam(value = "recaptcha_response_field", required = false) String responseField,
             ServletRequest servletRequest) throws GeneralSecurityException {
 
-     
         if (reCaptcha != null) {
             String remoteAdress = servletRequest.getRemoteAddr();
             ReCaptchaResponse reCaptchaResponse = reCaptcha.checkAnswer(remoteAdress, challangeField, responseField);
@@ -132,20 +130,20 @@ public class UserController {
             }
         }
         if (!result.hasErrors()) {
-               if (userService.isUserExistByEmail(form.getEmail())) {
+            if (userService.isUserExistByEmail(form.getEmail())) {
                 FieldError fieldError = new FieldError("user", "email", "email already exists");
                 result.addError(fieldError);
                 return "thy/public/signup";
             }
-               
+
             if (userService.isUserExistByLogin(form.getEmail())) {
                 FieldError fieldError = new FieldError("user", "username", "login already exists");
                 result.addError(fieldError);
                 return "thy/public/signup";
             }
-               
-            Users user = new Users();        
-           
+
+            Users user = new Users();
+
             user.setLogin(form.getUsername());
             user.setEmail(form.getEmail());
             user.setEnabled(false);
@@ -154,7 +152,7 @@ public class UserController {
             Role role = new Role();
             role.setUser(user);
             role.setRole(2);
-            
+
             SecurityCode securityCode = new SecurityCode();
             securityCode.setUser(user);
             securityCode.setTimeRequest(new Date());
@@ -165,10 +163,17 @@ public class UserController {
 
             personal person = new personal();
             person.setUser(user);
-            person.setAccessNumber(formatNum(""+user.getId()));
             person.setPhoto(new byte[1]);
             user.setPerson(person);
             userService.save(user);
+            
+            /* for generate accessNumber by userId */
+            user = userService.getRepository().findUserByEmail(user.getEmail());
+            person = user.getPerson();
+            person.setAccessNumber(formatNum(""+user.getId()));
+            user.setPerson(person);
+            userService.save(user);
+            
             securityCodeRepository.save(securityCode);
             mailSenderService.sendAuthorizationMail(user, user.getSecurityCode());
 
@@ -180,68 +185,77 @@ public class UserController {
         return "thy/public/mailSent";
     }
 //
-        @ResponseBody
-	@RequestMapping(value = "/profile/upload", method = RequestMethod.POST)
-	public String handleUpload(
+
+    @ResponseBody
+    @RequestMapping(value = "/profile/upload", method = RequestMethod.POST)
+    public String handleUpload(
             @RequestParam(value = "uploadfile", required = false) MultipartFile uploadfile,
             @RequestParam(value = "propId") String propId,
             HttpServletResponse httpServletResponse) throws IOException {
-         System.err.println("JSONDATAFILE!!");
-            personal p = personalService.findByAccessNumber(propId);
-            p.setLastUpdate(new Date());
-             System.err.println("JSONDATAFILE3!!"+uploadfile.getBytes().length);
-            p.setPhoto(uploadfile.getBytes());   
-            personalService.getRepository().save(p);
-        return "success";
+
+        Object p = personalService.findByAccessNumber(propId);
+        if (p instanceof personal) {
+            personal person = (personal)p;
+            person.setLastUpdate(new Date());
+            person.setPhoto(uploadfile.getBytes());
+            personalService.getRepository().save(person);
+            return "success";
+        }
         
+        if (p instanceof Boolean)
+            return "failed";
+        
+        return "failed";
     }
-        
+
     @RequestMapping(value = "/profile/update", method = RequestMethod.POST)
     @ResponseBody
-    public String userProfileUpdate(@RequestParam("sdata") String sdata)  throws JSONException{
-System.out.println("JSONDATA1"+sdata);
-        JSONObject o = new JSONObject(sdata);        
-        System.out.println("JSONDATA12 "+(String) o.get("propId"));
-        personal p = personalService.findByAccessNumber((String) o.get("propId"));          
-        System.out.println("JSONDATA2"+sdata);
-        p.setFname((String) o.get("fname"));
-        p.setSname((String) o.get("sname"));
-        p.setTname((String) o.get("tname"));
-         p.setPassportNum("-");
-        p.setPassportSeria((String) o.get("pasport"));
-        p.setAddres((String) o.get("address"));
-        p.setInfo((String) o.get("comment"));
-        p.setPhone((String) o.get("phone"));
-        p.setStage((String) o.get("stage"));
-        p.setOffice((String) o.get("office"));
-        p.setPost((String) o.get("post"));
-        p.setLastUpdate(new Date());
-         System.out.println("JSONDATA3"+p.toString());
-        personalService.getRepository().save(p);
-        return p.getLastUpdate().toString();
-    }
+    public String userProfileUpdate(@RequestParam("sdata") String sdata) throws JSONException {
     
+        if (StringUtils.isEmpty(sdata))
+            return (new Date()).toString();
         
+        JSONObject o = new JSONObject(sdata);
+        Object pObject = personalService.findByAccessNumber((String) o.get("propId"));
+        if (pObject instanceof personal) {
+            personal p = (personal)pObject;
+            p.setFname((String) o.get("fname"));
+            p.setSname((String) o.get("sname"));
+            p.setTname((String) o.get("tname"));
+            p.setPassportNum("-");
+            p.setPassportSeria((String) o.get("pasport"));
+            p.setAddres((String) o.get("address"));
+            p.setInfo((String) o.get("comment"));
+            p.setPhone((String) o.get("phone"));
+            p.setStage((String) o.get("stage"));
+            p.setOffice((String) o.get("office"));
+            p.setPost((String) o.get("post"));
+            p.setLastUpdate(new Date());
+            personalService.getRepository().save(p);
+            return p.getLastUpdate().toString();
+        }
+        return (new Date()).toString();
+    }
+
     @RequestMapping(value = "/profile/test", method = RequestMethod.POST)
     @ResponseBody
-    public String userProfileTest(@RequestParam("userData") String userData){
-         personal p = personalService.findByAccessNumber(userData);    
-         return p.getLastUpdate().toString();
+    public String userProfileTest(@RequestParam("userData") String propId) {
+        Object pObject = personalService.findByAccessNumber(propId);
+        if (pObject instanceof personal)
+            return ((personal)pObject).getLastUpdate().toString();
+        return (new Date()).toString();
     }
-    
-    @RequestMapping(value = "/profile/info/",method=RequestMethod.POST)
+
+    @RequestMapping(value = "/profile/info/", method = RequestMethod.POST)
     @ResponseBody
     public String searchContacts(@RequestParam("userData") String userData) throws JSONException {
-        System.out.println("JSONDATAdd"+userData);
-        personal p = personalService.findByAccessNumber(userData); 
-        System.out.println("JSONDATAtest"+p.getFname());
-        // System.out.println("JSONDATA"+p.toJSON());
-        return p.toString();
+        Object pObject = personalService.findByAccessNumber(userData);       
+        return ((personal)pObject).toString();
     }
 
     @RequestMapping(value = "/public/activation", method = RequestMethod.GET)
     @Transactional
-    public String activation(@RequestParam String mail, @RequestParam String code,Model model) {
+    public String activation(@RequestParam String mail, @RequestParam String code, Model model) {        
         log.debug("Enter: activation");
         if (userService.findUserBySecurityCode(mail, code) != null) {
             Users user = userService.getRepository().findUserByEmail(mail);
@@ -254,19 +268,19 @@ System.out.println("JSONDATA1"+sdata);
             SecurityContextHolder.getContext().setAuthentication(auth);
             userSessionComponent.setCurrentUser(user);
             log.debug("Exit: activation");
-            model.addAttribute("propId", "000001");
+            model.addAttribute("propId", user.getPerson().getAccessNumber());
             return "thy/personal/profile";
         }
         log.debug("Exit: activation");
         return "thy/error/error";
 
     }
-    
-    private String formatNum(String s){
-        if (s.length()<6)
-        {
-            s="0"+s;
-            formatNum(s);
+
+    private String formatNum(String s) {
+        if (s.length() < 6) {
+            s = "0" + s;
+            System.out.println("recursiya:"+s);
+            s = formatNum(s);
         }
         return s;
     }

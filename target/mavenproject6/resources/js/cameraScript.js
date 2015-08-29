@@ -26,7 +26,7 @@ function getUserByQR(qr) {
         setTimeout(function() {
             $("[class*='json-prop']").html("-empty-");
             $(".json-propPhoto").attr("src", projectPath + "/resources/img/no_avatar.jpg");
-        }, 10000);
+        }, TIMEOUT_QR_CLEAR);
     });
 
 }
@@ -36,7 +36,7 @@ function getLogs() {
         $(".logs").attr("time-out", true);
         setInterval(function() {
             getLogs();
-        }, 5000);
+        }, INTERVAL_LOG_UPDATE);
     }
 
     $.post(projectPath + "/camera/logs", {_csrf: $("#_csrf").val()}, function(data) {
@@ -104,7 +104,7 @@ $(document).ready(function() {
             newWin.focus();
             setTimeout(function() {
                 newWin.close();
-            }, 30000);
+            }, TIMEOUT_SKIPER_HIDE);
         }
     });
 
@@ -124,7 +124,7 @@ $(document).ready(function() {
             newWin.focus();
             setTimeout(function() {
                 newWin.close();
-            }, 30000);
+            }, TIMEOUT_SKIPER_HIDE);
         }
     });
 });

@@ -17,6 +17,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,16 +27,23 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import javax.imageio.ImageIO;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import net.glxn.qrgen.QRCode;
 import net.glxn.qrgen.image.ImageType;
 import net.tanesha.recaptcha.ReCaptchaImpl;
+import org.apache.catalina.core.ApplicationContext;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.simple.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ResourceLoaderAware;
+import org.springframework.core.io.ClassRelativeResourceLoader;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.FileSystemResourceLoader;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,19 +55,22 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class CameraController {
-    
-@Qualifier("rootLogger")
-@Autowired
-private  Logger log;
-   
+
+    @Qualifier("rootLogger")
+    @Autowired
+    private Logger log;
+
     @Autowired
     private ReCaptchaImpl reCaptcha;
 
-      @Autowired
+    @Autowired
     PersonalService personalService;
-      
+
     @Autowired
     EncryptionUtil encryptionUtil;
+
+    @Autowired
+    ServletContext servletContext;
 
     @RequestMapping(value = {"/camera"}, method = RequestMethod.GET)
     public String defaultPage(Model model, Locale locale) throws ArithmeticException {
@@ -67,7 +78,7 @@ private  Logger log;
         if (!model.containsAttribute("user")) {
             model.addAttribute("user", new UserForm());
         }
-        log.debug("Check: reCaptcha "+ (reCaptcha != null));
+        log.debug("Check: reCaptcha " + (reCaptcha != null));
         if (reCaptcha != null) {
             model.addAttribute("recaptcha", reCaptcha.createRecaptchaHtml(null, null));
         }
@@ -96,18 +107,16 @@ private  Logger log;
         JSONArray ar = new JSONArray();
         JSONObject resultJson = new JSONObject();
         JSONObject obj = new JSONObject();
-   
-           
-            obj.put("propNumber", "0000001");
-            obj.put("propDate", (new Date()).toString());
-            obj.put("fname", "Василий");
-            obj.put("sname", "Семенович");//
-            obj.put("tname", "Казякин");//
-            obj.put("pasport", "ВК898999");//
-            obj.put("level", "10");
-            obj.put("userId", "10");
-            ar.add(obj);
-       
+
+        obj.put("propNumber", "0000001");
+        obj.put("propDate", (new Date()).toString());
+        obj.put("fname", "Василий");
+        obj.put("sname", "Семенович");//
+        obj.put("tname", "Казякин");//
+        obj.put("pasport", "ВК898999");//
+        obj.put("level", "10");
+        obj.put("userId", "10");
+        ar.add(obj);
 
         resultJson.put("user", ar);
         return resultJson.toString();
@@ -117,65 +126,99 @@ private  Logger log;
     public ModelAndView getProfile(@PathVariable("userId") String userId) {
 
         ModelAndView model = new ModelAndView("thy/personal/skiper");
-        personal p = personalService.findByAccessNumber(userId);
-         
-        model.addObject("propNumber", p.getAccessNumber());
-        model.addObject("propStart", "24.05.2015");
-        model.addObject("propEnd", "24.05.2016");
-        model.addObject("propTname", p.getTname());
-        model.addObject("propFname", p.getFname());
-        model.addObject("propSname", p.getSname());
-        model.addObject("propDocument", p.getPassportNum()+p.getPassportSeria());
-        model.addObject("propLevel", p.getStage());
-        return model;
+        Object pObject = personalService.findByAccessNumber(userId);
+        if (pObject instanceof personal) {
 
+            personal p = (personal) pObject;
+            model.addObject("propId", p.getAccessNumber());
+            model.addObject("propStart", "24.05.2015");
+            model.addObject("propEnd", "24.05.2016");
+            model.addObject("propTname", p.getTname());
+            model.addObject("propFname", p.getFname());
+            model.addObject("propSname", p.getSname());
+            model.addObject("propDocument", p.getPassportNum() + p.getPassportSeria());
+            model.addObject("propLevel", p.getStage());
+
+        }
+        return model;
     }
-    
+
     @RequestMapping(value = "/avatar/{propId}", method = RequestMethod.GET)
     public @ResponseBody
     BufferedImage getFile(@PathVariable String propId) throws IOException {
-        System.out.println("IMGDATA!"+propId);
-            personal p = personalService.findByAccessNumber(propId);
-        byte[] imageInByte;
-         imageInByte = p.getPhoto();
-       InputStream in = new ByteArrayInputStream(imageInByte);
-			BufferedImage img = ImageIO.read(in);
-         System.out.println("IMGDATA!loaded");
-         
-        return img;
+
+        BufferedImage img;
+
+        Object pObject = personalService.findByAccessNumber(propId);
+        if (pObject instanceof personal) {
+            byte[] imageInByte;
+            imageInByte = ((personal) pObject).getPhoto();
+            if (imageInByte.length > 1) {
+                InputStream in = new ByteArrayInputStream(imageInByte);
+                img = ImageIO.read(in);
+            } else {
+
+                InputStream in = servletContext.getResourceAsStream("/resources/img/no_avatar.jpg");
+                img = ImageIO.read(in);
+            }
+            return img;
+        } else {
+            InputStream in = servletContext.getResourceAsStream("/resources/img/no_avatar.jpg");
+            img = ImageIO.read(in);
+            return img;
+        }
+
     }
-    
+
+    @RequestMapping(value = "/avatar/reset/{propId}", method = RequestMethod.GET)
+    public @ResponseBody
+    void resetFile(@PathVariable String propId) throws IOException {
+        Object pObject = personalService.findByAccessNumber(propId);
+        if (pObject instanceof personal) {
+            personal p = (personal) pObject;
+            p.setPhoto(new byte[1]);
+            p.setLastUpdate(new Date());
+            personalService.getRepository().save(p);
+        }
+
+    }
+
     @RequestMapping(value = "/qr/{userId}", method = RequestMethod.GET)
     public @ResponseBody
     BufferedImage getQRCode(@PathVariable String userId) throws IOException, GeneralSecurityException {
-        System.out.println("IMGDATA!"+userId);
-        
-        
-        personal p = personalService.findByAccessNumber(userId);
-        String userDate = p.getAccessNumber()+" "+p.getFname()+" "+p.getTname();
-        ByteArrayOutputStream out = QRCode.from(Base64.getEncoder().encodeToString(userDate.getBytes()))
-                                        .to(ImageType.JPG).stream();
-        
-         byte[] imageInByte;
-         imageInByte = out.toByteArray();
-       InputStream in = new ByteArrayInputStream(imageInByte);
-			BufferedImage img = ImageIO.read(in);
-         System.out.println("IMGDATA!loaded");
-         
-        return img;
+        BufferedImage img;
+
+        Object pObject = personalService.findByAccessNumber(userId);
+        if (pObject instanceof personal) {
+            personal p = (personal) pObject;
+            String userDate = p.getAccessNumber() + " " + p.getFname() + " " + p.getTname();
+            ByteArrayOutputStream out = QRCode.from(Base64.getEncoder()
+                    .encodeToString(userDate.getBytes()))
+                    .to(ImageType.JPG).stream();
+            byte[] imageInByte;
+            imageInByte = out.toByteArray();
+            InputStream in = new ByteArrayInputStream(imageInByte);
+            img = ImageIO.read(in);
+            return img;
+        } else {
+
+            InputStream in = servletContext.getResourceAsStream("/resources/img/qr-code.jpg");
+            img = ImageIO.read(in);
+            return img;
+        }
+
     }
-    
 
     @RequestMapping(value = "/camera/plist", method = RequestMethod.GET)
     public @ResponseBody
     String getPersonalName(@RequestParam("personalName") String personalName) {
         JSONArray ar = new JSONArray();
 
-       List<personal> pList = personalService.getAll();
-        for (personal p:pList) {
-            String a = p.getAccessNumber()+" "+p.getFname()+" "+p.getSname()+" "+p.getTname();
+        List<personal> pList = personalService.getAll();
+        for (personal p : pList) {
+            String a = p.getAccessNumber() + " " + p.getFname() + " " + p.getSname() + " " + p.getTname();
             if (a.contains(personalName)) {
-                ar.add(p.getFname()+" "+p.getSname()+" "+p.getTname());
+                ar.add(p.getFname() + " " + p.getSname() + " " + p.getTname());
             }
         }
         return ar.toString();
@@ -199,7 +242,7 @@ private  Logger log;
         return resultJson.toString();
 
     }
-    
+
     @ResponseBody
     @RequestMapping(value = "/ping", method = RequestMethod.POST)
     public String pingPong() throws JSONException {
@@ -224,6 +267,5 @@ private  Logger log;
         resultJson.put("logs", ar);
         return resultJson.toString();
     }
-    
-    
+
 }

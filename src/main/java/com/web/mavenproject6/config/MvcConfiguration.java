@@ -3,7 +3,7 @@ package com.web.mavenproject6.config;
 import com.github.dandelion.datatables.thymeleaf.dialect.DataTablesDialect;
 import com.web.mavenproject6.forms.MailForm;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -12,9 +12,9 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import javax.servlet.MultipartConfigElement;
-import javax.servlet.annotation.MultipartConfig;
+
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.embedded.FilterRegistrationBean;
+
 import org.springframework.boot.context.embedded.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -36,7 +36,6 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.ui.velocity.VelocityEngineFactoryBean;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.LocaleResolver;
@@ -110,7 +109,7 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter implements Schedul
 //                <bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"/>
         
         ByteArrayHttpMessageConverter byteArray = new ByteArrayHttpMessageConverter();
-        byteArray.setSupportedMediaTypes(Arrays.asList(MediaType.IMAGE_JPEG,MediaType.IMAGE_PNG,MediaType.APPLICATION_OCTET_STREAM,MediaType.MULTIPART_FORM_DATA));
+        byteArray.setSupportedMediaTypes(Arrays.asList(MediaType.APPLICATION_OCTET_STREAM,MediaType.MULTIPART_FORM_DATA));
         converters.add(byteArray);
     }
     

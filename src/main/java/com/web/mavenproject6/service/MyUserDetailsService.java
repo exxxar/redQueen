@@ -45,7 +45,7 @@ public class MyUserDetailsService implements UserDetailsService {
                     .setParameter("login", login)
                     .getSingleResult();
 
-            boolean enabled = true;
+            boolean enabled = domainUser.isEnabled();
             boolean accountNonExpired = true;
             boolean credentialsNonExpired = true;
             boolean accountNonLocked = true;          

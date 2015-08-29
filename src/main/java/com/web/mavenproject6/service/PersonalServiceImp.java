@@ -36,29 +36,32 @@ public class PersonalServiceImp implements PersonalService {
     public personal findByFST(String fname, String sname, String tname) {
         return (personal) em.createQuery("from personal where fname = :fname and"
                 + " sname = :sname and tname = :tname")
-                .setParameter("fname",fname )
+                .setParameter("fname", fname)
                 .setParameter("sname", sname)
                 .setParameter("tname", tname)
                 .getSingleResult();
     }
 
-    
     @Override
     public void add(personal p) {
-       personalRepository.save(p);
+        personalRepository.save(p);
     }
 
     @Override
-    public personal findByAccessNumber(String accessNumber) {
+    public Object findByAccessNumber(String accessNumber) {
         TypedQuery query = em.createQuery("select p from personal p where p.accessNumber = ?1", personal.class);
-        query.setParameter(1, accessNumber);    
-        return (personal) query.getSingleResult();
+        query.setParameter(1, accessNumber);
+
+        try {
+            return query.getSingleResult();
+        } catch (Exception ee) {
+            return false;
+        }
     }
 
     @Override
     public List<personal> getAll() {
-          return (List<personal>) personalRepository.findAll();
+        return (List<personal>) personalRepository.findAll();
     }
 
-   
 }

@@ -2,6 +2,14 @@ var projectPath = "http://localhost:8080/redQueen";
 var autoDiscon = false;
 var lastUpdate = "";
 
+var INTERVAL_PING = 10000;
+var INTERVAL_PONG = 5000;
+var INTERVAL_LOG_UPDATE = 5000;
+var INTERVALE_TEST_UPDATE = 5000;
+var TIMEOUT_SKIPER_HIDE = 30000;
+var TIMEOUT_QR_CLEAR = 5000;
+
+
 function split(val) {
     return val.split(/,\s*/);
 }
@@ -23,8 +31,8 @@ var intId = setInterval(function() { //clearInterval(timerId);
             else
             {
                 clearInterval(intId);
-                window.location.href = "./login";
+                window.location.href = projectPath+"/login";
             }
-        }, 5000);
+        }, INTERVAL_PONG);
     }
-}, 10000);
+}, INTERVAL_PING);

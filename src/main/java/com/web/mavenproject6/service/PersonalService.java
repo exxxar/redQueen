@@ -17,7 +17,7 @@ import java.util.List;
 public interface PersonalService {
     PersonalRepository getRepository();
     personal findByFST(String fname, String sname, String tname);
-    personal findByAccessNumber(String accessNumber);
+    Object findByAccessNumber(String accessNumber);
     List<personal> getAll();
     void add(personal p);
 }

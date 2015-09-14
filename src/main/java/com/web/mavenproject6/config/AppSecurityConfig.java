@@ -44,7 +44,7 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .loginPage("/login")
                 .permitAll()
-                .failureUrl("/login/error")
+                .failureUrl("/login?error")
                 .and()
                 .logout().logoutUrl("/j_spring_security_logout")
                 .invalidateHttpSession(true)

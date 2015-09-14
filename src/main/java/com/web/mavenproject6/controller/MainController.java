@@ -46,29 +46,49 @@ public class MainController {
     private UserSessionComponent userSessionComponent;
     @Autowired
     private UserServiceImp userService;
-    
-
 
     @RequestMapping(value = {"/"})
-    public String login(Model model, @RequestParam(required = false) String message) {     
+    public String login(Model model, @RequestParam(required = false) String message) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean isSecure = false;
         for (GrantedAuthority role : auth.getAuthorities()) {
-            if (role.getAuthority().equals("ROLE_SECURE"))
+            if (role.getAuthority().equals("ROLE_SECURE")) {
                 isSecure = true;
+            }
         }
-        if (isSecure)
+        if (isSecure) {
             return "thy/camera";
-     
-        UserDetails ud = (UserDetails) auth.getPrincipal();
-   
-        Users u = userService.getRepository().findUserByEmail(ud.getUsername());
-        if (u==null)
-            u = userService.getRepository().findUserByLogin(ud.getUsername());
+        }
 
-        if (u==null)
+        UserDetails ud = (UserDetails) auth.getPrincipal();
+
+        Users u = userService.getRepository().findUserByEmail(ud.getUsername());
+        if (u == null) {
+            u = userService.getRepository().findUserByLogin(ud.getUsername());
+        }
+
+        if (u == null) {
             return "thy/error/404";
-        
+        }
+
+        model.addAttribute("propId", u.getPerson().getAccessNumber());
+        return "thy/personal/profile";
+    }
+
+    @RequestMapping(value = {"/self_profile"})
+    public String profileXS(Model model, @RequestParam(required = false) String message) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails ud = (UserDetails) auth.getPrincipal();
+        System.out.println("!!!!!!12345"+ud.getUsername());
+        Users u = userService.getRepository().findUserByEmail(ud.getUsername());
+        if (u == null) {
+            u = userService.getRepository().findUserByLogin(ud.getUsername());
+        }
+        System.out.println("!!!!!!123456");
+        if (u == null) {
+            return "thy/error/404";
+        }
+        System.out.println("!!!!!!123457");
         model.addAttribute("propId", u.getPerson().getAccessNumber());
         return "thy/personal/profile";
     }
@@ -94,10 +114,10 @@ public class MainController {
         model.addAttribute("loginError", true);
         return "thy/error/Exception";
     }
-    
-     @RequestMapping("/login/profile")
+
+    @RequestMapping("/login/profile")
     public String profileUser(Model model) {
-   
+
         return "thy/public/profile";
     }
 
@@ -110,7 +130,7 @@ public class MainController {
     public ModelAndView ex405() {
         return new ModelAndView("thy/error/405");
     }
-    
+
     @RequestMapping(value = "/500", method = RequestMethod.GET)
     public ModelAndView ex500() {
         return new ModelAndView("thy/error/500");

@@ -18,8 +18,6 @@ import com.web.mavenproject6.utility.EncryptionUtil;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,20 +33,15 @@ import javax.servlet.http.HttpServletRequest;
 import net.glxn.qrgen.QRCode;
 import net.glxn.qrgen.image.ImageType;
 import net.tanesha.recaptcha.ReCaptchaImpl;
-import org.apache.catalina.core.ApplicationContext;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.simple.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ResourceLoaderAware;
-import org.springframework.core.io.ClassRelativeResourceLoader;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.FileSystemResourceLoader;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -77,7 +70,7 @@ public class CameraController {
 
     @Autowired
     ServletContext servletContext;
-    
+
     private List<JSONObject> simpleLog = new ArrayList<>();
 
     @RequestMapping(value = {"/camera"}, method = RequestMethod.GET)
@@ -100,23 +93,20 @@ public class CameraController {
     public String upload(@RequestParam(value = "imgdata", required = false) String imgdata,
             HttpServletRequest request) throws FileNotFoundException, IOException, GeneralSecurityException, JSONException {
 
-//        if (imgdata.length() != 256) {
-//            JSONObject o = new JSONObject();
-//            o.put("error", "Invalid username and password!");
-//            return o.toString();
-//
-//        }
-//
-//        imgdata = encryptionUtil.decrypt(imgdata.getBytes());
-//        System.out.println("imgdata!DECRYPT!" + imgdata);
-//        JSONObject o = new JSONObject();
-//        o.append("success", "Data success decrypt");
-//        return o.toString();
+        if (StringUtils.isEmpty(imgdata)) {
+            //return (new Date()).toString();
+        }
+        
+        
+        JSONObject o = new JSONObject(imgdata);
+        imgdata = new String(Base64.getDecoder().decode(o.getString("qr")));
+       
+       
+        
         JSONArray ar = new JSONArray();
         JSONObject resultJson = new JSONObject();
         JSONObject obj = new JSONObject();
 
-        
         obj.put("propNumber", "0000001");
         obj.put("propDate", (new Date()).toString());
         obj.put("fname", "Василий");
@@ -125,9 +115,9 @@ public class CameraController {
         obj.put("pasport", "ВК898999");//
         obj.put("level", "10");
         obj.put("userId", "10");
-        ar.add(obj); 
+        ar.add(obj);
         resultJson.put("user", ar);
-        
+
         simpleLog.add(obj);
         return resultJson.toString();
     }
@@ -150,7 +140,7 @@ public class CameraController {
             model.addObject("propLevel", p.getStage());
 
         }
-        
+
         Object gObject = guestService.findByAccessNumber(userId);
         if (gObject instanceof guest) {
 
@@ -165,7 +155,7 @@ public class CameraController {
             model.addObject("propLevel", "GUEST");
 
         }
-        
+
         return model;
     }
 
@@ -239,7 +229,7 @@ public class CameraController {
         Object pObject = personalService.findByAccessNumber(userId);
         if (pObject instanceof personal) {
             personal p = (personal) pObject;
-            String userDate = p.getAccessNumber() + " " + p.getFname() + " " + p.getTname();
+            String userDate = "{userId:"+p.getAccessNumber() + ",fname:" + p.getFname() + ",tname:" + p.getTname()+"}";
             ByteArrayOutputStream out = QRCode.from(Base64.getEncoder()
                     .encodeToString(userDate.getBytes()))
                     .to(ImageType.JPG).stream();
@@ -302,7 +292,7 @@ public class CameraController {
     public @ResponseBody
     String getPersonalName(@RequestParam("personalName") String personalName) {
         JSONArray ar = new JSONArray();
-        
+
         List<personal> pList = personalService.getAll();
         for (personal p : pList) {
             String a = p.getAccessNumber() + " " + p.getFname() + " " + p.getSname() + " " + p.getTname();
@@ -319,7 +309,7 @@ public class CameraController {
     public String cameraLogs() throws JSONException {
         JSONArray ar = new JSONArray();
         JSONObject resultJson = new JSONObject();
-        for (JSONObject j:simpleLog) {            
+        for (JSONObject j : simpleLog) {
             ar.add(j);
         }
         resultJson.put("logs", ar);

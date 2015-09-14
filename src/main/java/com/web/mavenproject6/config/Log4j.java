@@ -5,33 +5,50 @@
  */
 package com.web.mavenproject6.config;
 
-import com.web.mavenproject6.controller.CameraController;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.Date;
 
 import org.apache.log4j.*;
 
-import org.apache.log4j.net.SMTPAppender;
 import org.apache.log4j.net.SocketAppender;
-import org.apache.log4j.varia.LevelRangeFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.util.Log4jWebConfigurer;
+import org.springframework.context.annotation.PropertySource;
 
 /**
  *
  * @author Aleks
  */
 @Configuration
+@PropertySource("resources/application.properties")
 public class Log4j {
+
+    @Value("${log4j.consoleAppender.pattern}")
+    private String consolePattern;
+    @Value("${log4j.fileAppender.pattern}")
+    private String filePattern;
+    @Value("${log4j.socketAppender.pattern}")
+    private String socketPattern;
+    @Value("${log4j.data.format}")
+    private String dataFormat;
+    @Value("${log4j.fileAppender.extention}")
+    private String fileExt;
+    @Value("${log4j.fileAppender.maxSize}")
+    private long maxSize;
+    @Value("${log4j.socketAppender.host}")
+    private String host;
+    @Value("${log4j.socketAppender.port}")
+    private int port;
+    @Value("${log4j.socketAppender.delay}")
+    private int delay;
 
     @Bean
     public ConsoleAppender consoleAppender() {
         ConsoleAppender consoleAppender = new ConsoleAppender();
         consoleAppender.setThreshold(Level.TRACE);
-        PatternLayout patternLayout = new PatternLayout("%d %-5p  [%c{1}] %m %n");
+        PatternLayout patternLayout = new PatternLayout(consolePattern);
         consoleAppender.setLayout(patternLayout);
 
         return consoleAppender;
@@ -39,21 +56,21 @@ public class Log4j {
 
     @Bean
     public RollingFileAppender fileAppender() throws IOException {
-        PatternLayout patternLayout = new PatternLayout("%d %-5p  [%c{1}] %m %n");
+        PatternLayout patternLayout = new PatternLayout(filePattern);
         Date dNow = new Date();
-        SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss");
-        RollingFileAppender fileAppender = new RollingFileAppender(patternLayout, "c://1/log-" + ft.format(dNow) + ".log", true);
+        SimpleDateFormat ft = new SimpleDateFormat(dataFormat);
+        RollingFileAppender fileAppender = new RollingFileAppender(patternLayout, "/logs/log-" + ft.format(dNow) + fileExt, true);
         fileAppender.setMaxBackupIndex(2);
-        fileAppender.setMaximumFileSize(100000000000l);
-        
+        fileAppender.setMaximumFileSize(maxSize);
+
         return fileAppender;
     }
 
     @Bean
-    public SocketAppender socketAppender(){
-        SocketAppender s = new SocketAppender("localhost", 5000);
-        s.setReconnectionDelay(10000);
-        PatternLayout patternLayout = new PatternLayout("%m%n");
+    public SocketAppender socketAppender() {
+        SocketAppender s = new SocketAppender(host, port);
+        s.setReconnectionDelay(delay);
+        PatternLayout patternLayout = new PatternLayout(socketPattern);
         s.setLayout(patternLayout);
         return s;
     }
